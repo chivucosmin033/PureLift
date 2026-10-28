@@ -472,7 +472,8 @@
         </div>
 
         <div class="space-y-4">
-          <button type="submit" class="w-full h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] hover:bg-zinc-200 transition">
+          <div id="checkoutErrorBox" class="hidden p-4 border border-red-500/60 bg-red-950/25 text-xs text-zinc-200 space-y-2.5"></div>
+          <button type="submit" id="checkoutSubmitBtn" class="w-full h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-wait transition">
             Plasează comanda
           </button>
           <p class="text-xs text-zinc-600 text-center">Prin plasarea comenzii accepți <a href="termeni.html" class="underline hover:text-zinc-300">termenii și condițiile</a>.</p>

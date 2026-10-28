@@ -466,8 +466,15 @@ function updateCheckoutSummary() {
   document.getElementById('checkoutTotal').textContent = formatPrice(t.total);
 }
 
-function processCheckoutOrder(e) {
+async function processCheckoutOrder(e) {
   e.preventDefault();
+
+  const submitBtn = document.getElementById('checkoutSubmitBtn');
+  const errorBox = document.getElementById('checkoutErrorBox');
+  if (errorBox) {
+    errorBox.classList.add('hidden');
+    errorBox.innerHTML = '';
+  }
 
   const country = document.getElementById('checkoutCountry')?.value || 'România';
   const firstName = document.getElementById('checkoutFirstName').value.trim();
@@ -498,40 +505,82 @@ function processCheckoutOrder(e) {
   const orderNumber = 'PL-' + Math.floor(100000 + Math.random() * 900000);
   const itemsText = state.cart.map(i => `${i.quantity}x ${i.title} (Mărime: ${i.size}) — ${formatPrice(i.priceRon * i.quantity)}`).join('\n');
 
-  // Trimite detaliile comenzii direct prin Google Apps Script către purelift.brand@gmail.com
-  fetch('https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec', {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({
-      _subject: `Comandă nouă PURELIFT ${orderNumber} — ${fullName}`,
-      Comanda: orderNumber,
-      Prenume: firstName,
-      Nume_de_familie: lastName,
-      Telefon: phone,
-      Email_Client: email,
-      Tara: country,
-      Adresa: address,
-      Apartament_Detalii: apartment || '-',
-      Cod_Postal: postalCode || '-',
-      Localitate: city,
-      Judet: county,
-      Metoda_Expediere: methodLabel,
-      Produse: itemsText,
-      Total: formatPrice(t.total)
-    })
-  }).catch(() => {});
+  const payload = {
+    _subject: `Comandă nouă PURELIFT ${orderNumber} — ${fullName}`,
+    Comanda: orderNumber,
+    Prenume: firstName,
+    Nume_de_familie: lastName,
+    Telefon: phone,
+    Email_Client: email,
+    Tara: country,
+    Adresa: address,
+    Apartament_Detalii: apartment || '-',
+    Cod_Postal: postalCode || '-',
+    Localitate: city,
+    Judet: county,
+    Metoda_Expediere: methodLabel,
+    Produse: itemsText,
+    Total: formatPrice(t.total)
+  };
 
-  state.cart = [];
-  state.discountPercent = 0;
-  saveCart();
-  closeCheckoutModal();
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Se trimite comanda...';
+  }
 
-  document.getElementById('confirmOrderNumber').textContent = orderNumber;
-  document.getElementById('confirmCustomerName').textContent = fullName;
-  document.getElementById('confirmDeliveryAddress').textContent = fullAddressLine;
-  document.getElementById('confirmOrderTotal').textContent = formatPrice(t.total);
-  document.getElementById('orderConfirmationModal').classList.add('active');
-  lockScroll(true);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data || data.ok !== true) throw new Error('Invalid server response');
+
+    // Golim coșul DOAR după confirmarea ok:true de la server
+    state.cart = [];
+    state.discountPercent = 0;
+    saveCart();
+    closeCheckoutModal();
+
+    document.getElementById('confirmOrderNumber').textContent = orderNumber;
+    document.getElementById('confirmCustomerName').textContent = fullName;
+    document.getElementById('confirmDeliveryAddress').textContent = fullAddressLine;
+    document.getElementById('confirmOrderTotal').textContent = formatPrice(t.total);
+    document.getElementById('orderConfirmationModal').classList.add('active');
+    lockScroll(true);
+  } catch (err) {
+    // Păstrăm coșul și datele din formular intacte și afișăm opțiunile directe de preluare comandă
+    const mailBody = encodeURIComponent(
+      `Comandă: ${orderNumber}\nClient: ${fullName}\nTelefon: ${phone}\nAdresă: ${fullAddressLine}\nMetodă: ${methodLabel}\n\nProduse:\n${itemsText}\n\nTotal: ${formatPrice(t.total)}`
+    );
+    const mailHref = `mailto:purelift.brand@gmail.com?subject=${encodeURIComponent(payload._subject)}&body=${mailBody}`;
+
+    if (errorBox) {
+      errorBox.innerHTML = `
+        <div class="font-medium text-red-300">Comanda nu s-a putut trimite automat (conexiune întreruptă sau server ocupat).</div>
+        <div class="text-zinc-300 leading-relaxed">Coșul și datele tale au rămas salvate. Apasă mai jos pe <strong>Încearcă din nou</strong> sau trimite-ne comanda direct cu un click:</div>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <a href="${mailHref}" class="px-3 py-2 bg-white text-black font-semibold uppercase tracking-wider text-[11px] hover:bg-zinc-200 transition">Trimite pe Email</a>
+          <a href="https://www.instagram.com/_purelift_/" target="_blank" rel="noopener" class="px-3 py-2 border border-white text-white font-semibold uppercase tracking-wider text-[11px] hover:bg-white hover:text-black transition">Mesaj pe Instagram @_purelift_</a>
+        </div>
+      `;
+      errorBox.classList.remove('hidden');
+    }
+    showToast('Eroare la trimitere — încearcă din nou', 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Plasează comanda';
+    }
+  }
 }
 
 function closeOrderConfirmation() {
