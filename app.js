@@ -498,10 +498,10 @@ function processCheckoutOrder(e) {
   const orderNumber = 'PL-' + Math.floor(100000 + Math.random() * 900000);
   const itemsText = state.cart.map(i => `${i.quantity}x ${i.title} (Mărime: ${i.size}) — ${formatPrice(i.priceRon * i.quantity)}`).join('\n');
 
-  // Trimite detaliile comenzii către purelift.brand@gmail.com
-  fetch('https://formsubmit.co/ajax/purelift.brand@gmail.com', {
+  // Trimite detaliile comenzii direct prin Google Apps Script către purelift.brand@gmail.com
+  fetch('https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({
       _subject: `Comandă nouă PURELIFT ${orderNumber} — ${fullName}`,
       Comanda: orderNumber,
