@@ -54,7 +54,7 @@ body {
 
 /* Hero background */
 .hero-bg {
-  background-image: url('../images/hero-lifters.jpg');
+  background-image: url('hero-lifters.jpg');
   background-size: cover;
   background-position: 78% 18%;
   filter: brightness(0.82) saturate(0.85);

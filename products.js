@@ -8,8 +8,8 @@ const PRODUCTS_DATA = [
     subtitle: 'Scris PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
-    image: 'assets/images/products/wordmark-front.jpg',
-    backImage: 'assets/images/products/wordmark-back.jpg',
+    image: 'wordmark-front.jpg',
+    backImage: 'wordmark-back.jpg',
     description: 'Tricou din bumbac greu de 203 g/m², filat cu inele și țesut des, cu o față netedă și opacă. Imprimat discret pe piept cu scrisul PURELIFT.',
     specs: [
       '100% bumbac filat cu inele, țesut des (203 g/m²)',
@@ -18,7 +18,7 @@ const PRODUCTS_DATA = [
       'Spălare la 30 °C pe dos, fără uscător, nu se calcă direct pe imprimeu'
     ],
     colors: [
-      { name: 'Negru', hex: '#111113', image: 'assets/images/products/wordmark-front.jpg' }
+      { name: 'Negru', hex: '#111113', image: 'wordmark-front.jpg' }
     ],
     sizes: [
       { size: 'S', stock: 10 },
@@ -33,8 +33,8 @@ const PRODUCTS_DATA = [
     subtitle: 'Emblema PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
-    image: 'assets/images/products/emblem-front.jpg',
-    backImage: 'assets/images/products/emblem-back.jpg',
+    image: 'emblem-front.jpg',
+    backImage: 'emblem-back.jpg',
     description: 'Tricou din bumbac greu de 203 g/m², filat cu inele și țesut des, cu o față netedă și opacă. Imprimat discret pe piept cu emblema geometrică PURELIFT.',
     specs: [
       '100% bumbac filat cu inele, țesut des (203 g/m²)',
@@ -43,7 +43,7 @@ const PRODUCTS_DATA = [
       'Spălare la 30 °C pe dos, fără uscător, nu se calcă direct pe imprimeu'
     ],
     colors: [
-      { name: 'Negru', hex: '#111113', image: 'assets/images/products/emblem-front.jpg' }
+      { name: 'Negru', hex: '#111113', image: 'emblem-front.jpg' }
     ],
     sizes: [
       { size: 'S', stock: 10 },
@@ -58,8 +58,8 @@ const PRODUCTS_DATA = [
     subtitle: 'Emblemă și scris PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
-    image: 'assets/images/products/signature-front.jpg',
-    backImage: 'assets/images/products/signature-back.jpg',
+    image: 'signature-front.jpg',
+    backImage: 'signature-back.jpg',
     description: 'Tricou din bumbac greu de 203 g/m², filat cu inele și țesut des, cu o față netedă și opacă. Imprimat pe piept cu emblema geometrică și scrisul PURELIFT.',
     specs: [
       '100% bumbac filat cu inele, țesut des (203 g/m²)',
@@ -68,7 +68,7 @@ const PRODUCTS_DATA = [
       'Spălare la 30 °C pe dos, fără uscător, nu se calcă direct pe imprimeu'
     ],
     colors: [
-      { name: 'Negru', hex: '#111113', image: 'assets/images/products/signature-front.jpg' }
+      { name: 'Negru', hex: '#111113', image: 'signature-front.jpg' }
     ],
     sizes: [
       { size: 'S', stock: 10 },
