@@ -57,7 +57,7 @@ body {
   background-image: url('hero-lifters.jpg');
   background-size: cover;
   background-position: 78% 18%;
-  filter: brightness(0.82) saturate(0.85);
+  filter: brightness(0.98) contrast(1.02);
 }
 .hero-bg::after {
   content: '';
@@ -68,7 +68,7 @@ body {
 @media (max-width: 767px) {
   .hero-bg {
     background-position: 91% 0%;
-    filter: brightness(0.92) saturate(0.9);
+    filter: brightness(0.98) contrast(1.02);
   }
 }
 

@@ -128,11 +128,11 @@ function selectQuickSize(productId, size) {
   if (!container) return;
   container.querySelectorAll('.size-btn:not([disabled])').forEach(btn => {
     btn.classList.remove('bg-white', 'text-black', 'border-white');
-    btn.classList.add('border-[#2a2a30]', 'text-zinc-300');
+    btn.classList.add('border-[#2a2a30]', 'text-zinc-300', 'hover:text-white', 'hover:border-white');
   });
   const active = document.getElementById(`size-btn-${productId}-${size}`);
   if (active) {
-    active.classList.remove('border-[#2a2a30]', 'text-zinc-300');
+    active.classList.remove('border-[#2a2a30]', 'text-zinc-300', 'hover:text-white', 'hover:border-white');
     active.classList.add('bg-white', 'text-black', 'border-white');
   }
 }
