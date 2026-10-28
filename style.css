@@ -1,0 +1,200 @@
+/* PURELIFT – minimalist dark theme
+   Fonts: Unbounded (doar brand: PURELIFT + titlul hero), Inter (tot restul) */
+
+:root {
+  --bg: #0a0a0b;
+  --surface: #111113;
+  --surface-2: #141416;
+  --border: #1f1f23;
+  --border-strong: #2a2a30;
+  --text: #ffffff;
+  --muted: #a1a1aa;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-padding-top: 72px;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+::selection {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Brand typography – Unbounded only for the PURELIFT wordmark and hero headline */
+.font-brand {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.font-unbounded {
+  font-family: 'Unbounded', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Eyebrow label above section titles */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+/* Hero background */
+.hero-bg {
+  background-image: url('../images/hero-lifters.jpg');
+  background-size: cover;
+  background-position: 78% 18%;
+  filter: brightness(0.82) saturate(0.85);
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, var(--bg) 100%);
+}
+@media (max-width: 767px) {
+  .hero-bg {
+    background-position: 76% 15%;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); }
+
+/* Header */
+.glass-nav {
+  background: rgba(10, 10, 11, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Product image: front/back swap on hover */
+.product-image-container .front-img,
+.product-image-container .back-img {
+  transition: opacity 0.35s ease;
+}
+.product-image-container .back-img { opacity: 0; }
+.product-image-container:hover .back-img { opacity: 1; }
+.product-image-container:hover .front-img { opacity: 0; }
+
+/* Form controls */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  border-radius: 0;
+  transition: border-color 0.15s ease;
+}
+input::placeholder { color: #52525b; }
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #ffffff;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Focus ring for keyboard users */
+button:focus-visible,
+a:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Drawer & modal transitions */
+.drawer-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.cart-drawer {
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cart-drawer.active {
+  transform: translateX(0);
+}
+.modal-container {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-container.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-container .modal-content {
+  transform: translateY(8px);
+  transition: transform 0.2s ease;
+}
+.modal-container.active .modal-content {
+  transform: translateY(0);
+}
+
+/* Easybox Map (Leaflet dark theme overrides) */
+#easyboxLeafletMap {
+  background: #0d0d0f;
+}
+#easyboxLeafletMap .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(92%) contrast(92%) saturate(65%);
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #111113 !important;
+  color: #ffffff !important;
+  border: 1px solid #2a2a30;
+  border-radius: 0 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: #a1a1aa !important;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+.easybox-pin {
+  width: 24px;
+  height: 24px;
+  background: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.55);
+  transition: transform 0.15s ease;
+}
+.easybox-pin:hover {
+  transform: scale(1.2);
+}
