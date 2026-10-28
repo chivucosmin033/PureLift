@@ -67,7 +67,8 @@ body {
 }
 @media (max-width: 767px) {
   .hero-bg {
-    background-position: 76% 15%;
+    background-position: 70% 16%;
+    filter: brightness(0.85) saturate(0.88);
   }
 }
 
@@ -84,14 +85,18 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-/* Product image: front/back swap on hover */
+/* Product image: front/back swap on hover (desktop) + tap toggle (mobile) */
 .product-image-container .front-img,
 .product-image-container .back-img {
   transition: opacity 0.35s ease;
 }
 .product-image-container .back-img { opacity: 0; }
-.product-image-container:hover .back-img { opacity: 1; }
-.product-image-container:hover .front-img { opacity: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .product-image-container:hover .back-img { opacity: 1; }
+  .product-image-container:hover .front-img { opacity: 0; }
+}
+.product-image-container.show-back .back-img { opacity: 1; }
+.product-image-container.show-back .front-img { opacity: 0; }
 
 /* Form controls */
 input[type="text"],
@@ -105,6 +110,17 @@ textarea {
   color: #ffffff;
   border-radius: 0;
   transition: border-color 0.15s ease;
+}
+@media (max-width: 767px) {
+  /* Previne zoom-ul automat pe iOS / Android la atingerea câmpurilor */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 input::placeholder { color: #52525b; }
 input:focus,
@@ -159,42 +175,4 @@ a:focus-visible {
 }
 .modal-container.active .modal-content {
   transform: translateY(0);
-}
-
-/* Easybox Map (Leaflet dark theme overrides) */
-#easyboxLeafletMap {
-  background: #0d0d0f;
-}
-#easyboxLeafletMap .leaflet-tile-pane {
-  filter: invert(100%) hue-rotate(180deg) brightness(92%) contrast(92%) saturate(65%);
-}
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: #111113 !important;
-  color: #ffffff !important;
-  border: 1px solid #2a2a30;
-  border-radius: 0 !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
-}
-.leaflet-popup-content {
-  margin: 12px 14px !important;
-  font-family: 'Inter', system-ui, sans-serif;
-}
-.leaflet-container a.leaflet-popup-close-button {
-  color: #a1a1aa !important;
-}
-.leaflet-container a.leaflet-popup-close-button:hover {
-  color: #ffffff !important;
-}
-.easybox-pin {
-  width: 24px;
-  height: 24px;
-  background: #ef4444;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.55);
-  transition: transform 0.15s ease;
-}
-.easybox-pin:hover {
-  transform: scale(1.2);
 }

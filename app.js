@@ -11,7 +11,7 @@ const state = {
 const SHIPPING_COST = { easybox: 0, courier: 0 };
 
 const ROMANIAN_COUNTIES = [
-  "București", "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila",
+  "Brașov", "București", "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brăila",
   "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați",
   "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți",
   "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș",
@@ -76,21 +76,28 @@ function renderProducts() {
       <div class="relative w-full aspect-square bg-[#141416] overflow-hidden product-image-container cursor-pointer" onclick="openQuickView('${product.id}')">
         <img src="${product.image}" alt="${product.title} – față" loading="lazy" class="front-img absolute inset-0 w-full h-full object-cover" />
         <img src="${product.backImage}" alt="${product.title} – spate" loading="lazy" class="back-img absolute inset-0 w-full h-full object-cover" />
+        <button
+          type="button"
+          onclick="toggleMobileCardImage(event, this)"
+          class="md:hidden absolute bottom-2.5 right-2.5 z-10 px-2.5 py-1 bg-[#0a0a0b]/80 backdrop-blur-sm border border-[#2a2a30] text-[11px] text-zinc-300 uppercase tracking-wider"
+        >
+          Spate
+        </button>
       </div>
 
-      <div class="pt-4 flex flex-col flex-1 gap-4">
+      <div class="pt-3.5 sm:pt-4 flex flex-col flex-1 gap-3.5 sm:gap-4">
         <div class="flex items-center justify-between gap-4">
-          <p class="text-sm text-zinc-400 cursor-pointer hover:text-white transition" onclick="openQuickView('${product.id}')">${product.subtitle}</p>
+          <p class="text-sm text-zinc-300 sm:text-zinc-400 cursor-pointer hover:text-white transition" onclick="openQuickView('${product.id}')">${product.subtitle}</p>
           <span class="text-[15px] font-medium text-white whitespace-nowrap">${formatPrice(product.priceRon)}</span>
         </div>
 
-        <div class="mt-auto space-y-3">
+        <div class="mt-auto space-y-2.5 sm:space-y-3">
           <div class="flex gap-1.5" id="size-pill-container-${product.id}">
             ${product.sizes.map(s => `
               <button type="button" ${s.stock === 0 ? 'disabled' : ''}
                 onclick="selectQuickSize('${product.id}', '${s.size}')"
                 id="size-btn-${product.id}-${s.size}"
-                class="size-btn h-9 flex-1 text-xs font-medium border transition ${s.stock === 0 ? 'border-[#1f1f23] text-zinc-700 line-through cursor-not-allowed' : 'border-[#2a2a30] text-zinc-300 hover:border-white hover:text-white'}">
+                class="size-btn h-10 sm:h-9 flex-1 text-xs font-medium border transition ${s.stock === 0 ? 'border-[#1f1f23] text-zinc-700 line-through cursor-not-allowed' : 'border-[#2a2a30] text-zinc-300 hover:border-white hover:text-white'}">
                 ${s.size}
               </button>
             `).join('')}
@@ -103,6 +110,14 @@ function renderProducts() {
       </div>
     </article>
   `).join('');
+}
+
+function toggleMobileCardImage(event, btn) {
+  event.stopPropagation();
+  const container = btn.closest('.product-image-container');
+  if (!container) return;
+  const showingBack = container.classList.toggle('show-back');
+  btn.textContent = showingBack ? 'Față' : 'Spate';
 }
 
 const selectedSizes = {};
@@ -213,103 +228,109 @@ function renderCartDrawer() {
   `).join('');
 
   document.getElementById('cartSubtotal').textContent = formatPrice(t.subtotal);
+
   const discountRow = document.getElementById('cartDiscountRow');
   if (state.discountPercent > 0) {
     discountRow.classList.remove('hidden');
-    document.getElementById('cartDiscount').textContent = `−${formatPrice(t.discount)}`;
+    document.getElementById('cartDiscount').textContent = `-${formatPrice(t.discount)}`;
   } else {
     discountRow.classList.add('hidden');
   }
-  document.getElementById('cartTotal').textContent = formatPrice(t.afterDiscount);
-}
 
-// ---------- Promo codes ----------
-const PROMO_CODES = {
-  PUMP10: { type: 'percent', value: 10 },
-  PUREVIP: { type: 'percent', value: 15 },
-  FREESHIP: { type: 'shipping' }
-};
+  document.getElementById('cartTotal').textContent = formatPrice(t.total);
+}
 
 function applyPromoCode() {
   const input = document.getElementById('promoCodeInput');
-  const messageEl = document.getElementById('promoMessage');
-  if (!input) return;
-
+  const msg = document.getElementById('promoMessage');
   const code = input.value.trim().toUpperCase();
-  const promo = PROMO_CODES[code];
-  if (!promo) {
-    messageEl.textContent = 'Codul nu este valid.';
-    messageEl.className = 'text-xs text-red-400 mt-2 block';
-    return;
+
+  msg.classList.remove('hidden', 'text-white', 'text-red-400');
+
+  if (code === 'LIFT10' || code === 'PURE10') {
+    state.discountPercent = 10;
+    msg.textContent = 'Reducere de 10% aplicată.';
+    msg.classList.add('text-white');
+    renderCartDrawer();
+  } else if (code === 'PUMP15') {
+    state.discountPercent = 15;
+    msg.textContent = 'Reducere de 15% aplicată.';
+    msg.classList.add('text-white');
+    renderCartDrawer();
+  } else {
+    state.discountPercent = 0;
+    msg.textContent = 'Cod invalid.';
+    msg.classList.add('text-red-400');
+    renderCartDrawer();
   }
-  if (promo.type === 'percent') state.discountPercent = promo.value;
-  if (promo.type === 'shipping') state.freeShippingApplied = true;
-  messageEl.textContent = `Codul ${code} a fost aplicat.`;
-  messageEl.className = 'text-xs text-zinc-400 mt-2 block';
-  saveCart();
+  msg.className = `block text-xs mt-2 ${state.discountPercent > 0 ? 'text-white' : 'text-red-400'}`;
 }
 
-// ---------- Drawers & modals ----------
-function lockScroll(lock) { document.body.style.overflow = lock ? 'hidden' : ''; }
+function lockScroll(lock) {
+  document.body.style.overflow = lock ? 'hidden' : '';
+}
 
 function openCartDrawer() {
-  document.getElementById('cartDrawerBackdrop').classList.add('active');
-  document.getElementById('cartDrawer').classList.add('active');
+  document.getElementById('cartDrawer')?.classList.add('active');
+  document.getElementById('cartDrawerBackdrop')?.classList.add('active');
   lockScroll(true);
-  renderCartDrawer();
 }
 
 function closeCartDrawer() {
-  document.getElementById('cartDrawerBackdrop').classList.remove('active');
-  document.getElementById('cartDrawer').classList.remove('active');
+  document.getElementById('cartDrawer')?.classList.remove('active');
+  document.getElementById('cartDrawerBackdrop')?.classList.remove('active');
   lockScroll(false);
 }
 
+// ---------- Quick view modal ----------
 let activeModalSelectedSize = null;
 
 function openQuickView(productId) {
   const product = PRODUCTS_DATA.find(p => p.id === productId);
   if (!product) return;
-  activeModalSelectedSize = null;
 
-  document.getElementById('quickViewContent').innerHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="space-y-3">
-        <div class="w-full aspect-square bg-[#141416] overflow-hidden">
+  const firstAvailable = product.sizes.find(s => s.stock > 0);
+  activeModalSelectedSize = firstAvailable ? firstAvailable.size : null;
+
+  const content = document.getElementById('quickViewContent');
+  content.innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+      <div>
+        <div class="aspect-square bg-[#141416] overflow-hidden">
           <img id="modalMainImg" src="${product.image}" alt="${product.title}" class="w-full h-full object-cover" />
         </div>
-        <div class="flex gap-3">
-          ${[product.image, product.backImage].map((src, i) => `
-            <button onclick="setModalImage(this, '${src}')" class="modal-thumb w-20 h-20 overflow-hidden border ${i === 0 ? 'border-white' : 'border-[#2a2a30] opacity-60'} hover:opacity-100 transition" aria-label="${i === 0 ? 'Față' : 'Spate'}">
-              <img src="${src}" alt="" class="w-full h-full object-cover" />
-            </button>
-          `).join('')}
+        <div class="flex gap-2 mt-3">
+          <button type="button" onclick="setModalImage(this, '${product.image}')" class="modal-thumb w-16 h-16 border border-white overflow-hidden">
+            <img src="${product.image}" alt="Față" class="w-full h-full object-cover" />
+          </button>
+          <button type="button" onclick="setModalImage(this, '${product.backImage}')" class="modal-thumb w-16 h-16 border border-[#2a2a30] opacity-60 hover:opacity-100 overflow-hidden">
+            <img src="${product.backImage}" alt="Spate" class="w-full h-full object-cover" />
+          </button>
         </div>
       </div>
 
       <div class="flex flex-col">
-        <div class="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-3">Drop 01 · 203 g/m²</div>
-        <h2 class="text-xl font-medium text-white tracking-tight">${product.subtitle}</h2>
-        <div class="text-lg text-white mt-2">${formatPrice(product.priceRon)}</div>
+        <div class="text-xs text-zinc-500">${product.subtitle}</div>
+        <div class="text-xl sm:text-2xl font-medium text-white mt-1">${formatPrice(product.priceRon)}</div>
 
-        <p class="text-sm text-zinc-400 leading-relaxed mt-6">${product.description}</p>
+        <p class="text-sm text-zinc-400 leading-relaxed mt-4 sm:mt-5">${product.description}</p>
 
-        <ul class="mt-6 space-y-2 text-sm text-zinc-300 border-t border-[#1f1f23] pt-6">
-          ${product.specs.map(spec => `<li class="flex gap-3"><span class="text-zinc-600">—</span><span>${spec}</span></li>`).join('')}
+        <ul class="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-[#1f1f23] space-y-2 text-xs text-zinc-400">
+          ${product.specs.map(spec => `<li class="flex gap-2"><span class="text-zinc-600">—</span><span>${spec}</span></li>`).join('')}
         </ul>
 
-        <div class="mt-6 text-sm text-zinc-400">Culoare: <span class="text-white">${product.colors[0].name}</span></div>
-
-        <div class="mt-6">
-          <div class="flex items-center justify-between text-sm mb-3">
-            <span class="text-zinc-400">Mărime</span>
-            <button onclick="openSizeCalculatorModal()" class="text-zinc-400 hover:text-white underline underline-offset-2 text-xs">Tabel mărimi</button>
+        <div class="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-[#1f1f23]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-zinc-400">Mărime</span>
+            <button type="button" onclick="closeQuickView(); openSizeCalculatorModal()" class="text-xs text-zinc-400 hover:text-white underline underline-offset-4">
+              Tabel mărimi
+            </button>
           </div>
           <div class="grid grid-cols-4 gap-2">
             ${product.sizes.map(s => `
               <button id="modal-size-btn-${s.size}" ${s.stock === 0 ? 'disabled' : ''}
                 onclick="selectModalSize('${s.size}')"
-                class="modal-size-btn h-11 text-sm border transition ${s.stock === 0 ? 'border-[#1f1f23] text-zinc-700 line-through cursor-not-allowed' : 'border-[#2a2a30] text-zinc-200 hover:border-white'}">
+                class="modal-size-btn h-11 text-sm border transition ${s.stock === 0 ? 'border-[#1f1f23] text-zinc-700 line-through cursor-not-allowed' : s.size === activeModalSelectedSize ? 'border-white bg-white text-black' : 'border-[#2a2a30] text-zinc-200 hover:border-white'}">
                 ${s.size}
               </button>
             `).join('')}
@@ -317,7 +338,7 @@ function openQuickView(productId) {
         </div>
 
         <button onclick="addModalProductToCart('${product.id}')"
-          class="mt-8 w-full h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.12em] hover:bg-zinc-200 transition">
+          class="mt-6 sm:mt-8 w-full h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.12em] hover:bg-zinc-200 transition">
           Adaugă în coș
         </button>
         <p class="mt-4 text-xs text-zinc-500">Transport inclus · Livrare în 24–48h · Retur în 14 zile</p>
@@ -423,9 +444,10 @@ function closeCheckoutModal() {
 
 function populateCountiesSelect() {
   const select = document.getElementById('checkoutCounty');
-  if (!select || select.options.length > 1) return;
-  select.innerHTML = `<option value="">Alege județul</option>` +
-    ROMANIAN_COUNTIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  if (!select || select.options.length > 0) return;
+  select.innerHTML = ROMANIAN_COUNTIES.map(c =>
+    `<option value="${c}" ${c === 'Brașov' ? 'selected' : ''}>${c}</option>`
+  ).join('');
 }
 
 function updateCheckoutSummary() {
@@ -439,306 +461,38 @@ function updateCheckoutSummary() {
       </div>
     `).join('');
   }
-  const method = document.querySelector('input[name="shippingMethod"]:checked')?.value || 'easybox';
-  const addrLabel = document.getElementById('checkoutAddressLabel');
-  const addrInput = document.getElementById('checkoutAddress');
-  const countySelect = document.getElementById('checkoutCounty');
-  const cityInput = document.getElementById('checkoutCity');
-  const mapBtn = document.getElementById('openEasyboxMapBtn');
-  const extLink = document.getElementById('easyboxExternalLink');
-  if (method === 'brasov') {
-    if (addrLabel) addrLabel.textContent = 'Adresă sau zonă de predare în Brașov';
-    if (addrInput) addrInput.placeholder = 'ex. Strada / cartierul din Brașov';
-    if (countySelect) countySelect.value = 'Brașov';
-    if (cityInput && !cityInput.value) cityInput.value = 'Brașov';
-    if (mapBtn) mapBtn.classList.add('hidden');
-    if (extLink) extLink.classList.add('hidden');
-  } else {
-    if (addrLabel) addrLabel.textContent = 'Locker Sameday Easybox';
-    if (addrInput) addrInput.placeholder = 'Alege de pe hartă sau scrie numele lockerului';
-    if (mapBtn) mapBtn.classList.remove('hidden');
-    if (extLink) extLink.classList.remove('hidden');
-  }
   document.getElementById('checkoutSubtotal').textContent = formatPrice(t.afterDiscount);
   document.getElementById('checkoutShipping').textContent = 'Inclusă';
   document.getElementById('checkoutTotal').textContent = formatPrice(t.total);
 }
 
-// ---------- Harta Interactivă Sameday Easybox (România) ----------
-let easyboxMapInstance = null;
-let easyboxMarkersLayer = null;
-let currentEasyboxResults = [];
-
-function normalizeRoText(str) {
-  return String(str || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim();
-}
-
-function initEasyboxLeafletMap() {
-  if (easyboxMapInstance || typeof L === 'undefined') return;
-
-  easyboxMapInstance = L.map('easyboxLeafletMap', {
-    center: [45.85, 24.97], // Centrul României
-    zoom: 7,
-    zoomControl: true
-  });
-
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '&copy; OpenStreetMap &copy; Esri',
-    maxZoom: 19
-  }).addTo(easyboxMapInstance);
-
-  easyboxMarkersLayer = L.layerGroup().addTo(easyboxMapInstance);
-}
-
-function openSamedayLockerMap() {
-  const modal = document.getElementById('easyboxMapModal');
-  if (!modal) return;
-
-  modal.classList.add('active');
-
-  const cityVal = document.getElementById('checkoutCity')?.value.trim() || '';
-  const countyVal = document.getElementById('checkoutCounty')?.value.trim() || '';
-  const searchInput = document.getElementById('easyboxSearchInput');
-
-  const initialQuery = cityVal || countyVal || '';
-  if (searchInput) searchInput.value = initialQuery;
-
-  setTimeout(() => {
-    initEasyboxLeafletMap();
-    if (easyboxMapInstance) {
-      easyboxMapInstance.invalidateSize();
-    }
-    if (initialQuery) {
-      searchEasyboxMap(initialQuery);
-    } else {
-      resetEasyboxMapToRomania();
-    }
-  }, 80);
-}
-
-function closeEasyboxMapModal() {
-  document.getElementById('easyboxMapModal')?.classList.remove('active');
-}
-
-function resetEasyboxMapToRomania() {
-  const searchInput = document.getElementById('easyboxSearchInput');
-  if (searchInput) searchInput.value = '';
-  const allLockers = typeof EASYBOX_LOCKERS !== 'undefined' ? EASYBOX_LOCKERS : [];
-  renderEasyboxMarkersAndList(allLockers, false);
-  if (easyboxMapInstance) {
-    easyboxMapInstance.setView([45.85, 24.97], 7);
-  }
-}
-
-async function searchEasyboxMap(customQuery) {
-  const searchInput = document.getElementById('easyboxSearchInput');
-  const rawQuery = (typeof customQuery === 'string' ? customQuery : (searchInput?.value || '')).trim();
-  const allLockers = typeof EASYBOX_LOCKERS !== 'undefined' ? EASYBOX_LOCKERS : [];
-
-  if (!rawQuery) {
-    resetEasyboxMapToRomania();
-    return;
-  }
-
-  const qNorm = normalizeRoText(rawQuery);
-  let matches = allLockers.filter(l => {
-    const hay = normalizeRoText(`${l.name} ${l.address} ${l.city} ${l.county}`);
-    return hay.includes(qNorm);
-  });
-
-  // Căutare live suplimentară în OpenStreetMap Nominatim pentru orice oraș / stradă din România
-  try {
-    const countEl = document.getElementById('easyboxResultsCount');
-    if (countEl) countEl.textContent = 'Se caută lockere...';
-
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('easybox ' + rawQuery)}&countrycodes=ro&format=jsonv2&addressdetails=1&limit=35`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'ro' } });
-    if (res.ok) {
-      const osmItems = await res.json();
-      const seenCoords = new Set(matches.map(m => `${m.lat.toFixed(3)}_${m.lon.toFixed(3)}`));
-
-      osmItems.forEach(it => {
-        const lat = parseFloat(it.lat);
-        const lon = parseFloat(it.lon);
-        if (isNaN(lat) || isNaN(lon)) return;
-        const key = `${lat.toFixed(3)}_${lon.toFixed(3)}`;
-        if (seenCoords.has(key)) return;
-        seenCoords.add(key);
-
-        const addr = it.address || {};
-        const city = addr.city || addr.town || addr.village || addr.municipality || rawQuery;
-        const county = (addr.county || '').replace(/^Județul\s+/i, '').replace(/\s+County$/i, '') || city;
-        const road = [addr.road, addr.house_number].filter(Boolean).join(' nr. ');
-        const sub = addr.suburb || addr.neighbourhood || '';
-        const fullAddr = [road, sub, city].filter(Boolean).join(', ');
-        let name = (it.name || '').trim();
-        if (!name || name.toLowerCase() === 'easybox' || name.toLowerCase() === 'sameday easybox') {
-          name = road ? `Easybox ${road}` : `Easybox ${sub || city}`;
-        } else if (!name.toLowerCase().includes('easybox')) {
-          name = `Easybox ${name}`;
-        }
-
-        matches.push({ name, address: fullAddr || city, city, county, lat, lon });
-      });
-    }
-  } catch (_) {}
-
-  renderEasyboxMarkersAndList(matches, true);
-
-  // Dacă utilizatorul a căutat un oraș mic unde nu sunt pini indexați, centrăm harta pe oraș
-  if (matches.length === 0 && easyboxMapInstance) {
-    try {
-      const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(rawQuery + ', Romania')}&countrycodes=ro&format=jsonv2&limit=1`;
-      const geoRes = await fetch(geoUrl);
-      const geoData = await geoRes.json();
-      if (geoData && geoData[0]) {
-        easyboxMapInstance.setView([parseFloat(geoData[0].lat), parseFloat(geoData[0].lon)], 13);
-      }
-    } catch (_) {}
-  }
-}
-
-function renderEasyboxMarkersAndList(lockers, fitBoundsToResults) {
-  currentEasyboxResults = lockers;
-  const listEl = document.getElementById('easyboxListContainer');
-  const countEl = document.getElementById('easyboxResultsCount');
-
-  if (countEl) {
-    countEl.textContent = `${lockers.length} lockere Easybox găsite`;
-  }
-
-  if (easyboxMarkersLayer) {
-    easyboxMarkersLayer.clearLayers();
-  }
-
-  const pinIcon = typeof L !== 'undefined' ? L.divIcon({
-    className: '',
-    html: '<div class="easybox-pin"></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12]
-  }) : null;
-
-  const bounds = [];
-
-  lockers.forEach((locker, idx) => {
-    if (easyboxMarkersLayer && pinIcon) {
-      const marker = L.marker([locker.lat, locker.lon], { icon: pinIcon });
-      const popupHtml = `
-        <div class="min-w-[210px]">
-          <div class="text-xs font-semibold uppercase tracking-wider text-red-400">Sameday Easybox</div>
-          <div class="text-sm font-medium text-white mt-0.5">${locker.name}</div>
-          <div class="text-xs text-zinc-400 mt-1">${locker.address}</div>
-          <button
-            type="button"
-            onclick="selectEasyboxByIndex(${idx})"
-            class="mt-3 w-full h-9 bg-white text-black text-[11px] font-semibold uppercase tracking-[0.12em] hover:bg-zinc-200 transition"
-          >
-            Alege acest Easybox
-          </button>
-        </div>
-      `;
-      marker.bindPopup(popupHtml);
-      easyboxMarkersLayer.addLayer(marker);
-      bounds.push([locker.lat, locker.lon]);
-    }
-  });
-
-  if (fitBoundsToResults && easyboxMapInstance && bounds.length > 0) {
-    if (bounds.length === 1) {
-      easyboxMapInstance.setView(bounds[0], 15);
-    } else {
-      easyboxMapInstance.fitBounds(bounds, { padding: [35, 35], maxZoom: 15 });
-    }
-  }
-
-  if (!listEl) return;
-
-  if (lockers.length === 0) {
-    listEl.innerHTML = `
-      <div class="p-6 text-center text-xs text-zinc-400 space-y-3">
-        <p>Nu am găsit un locker exact cu acest nume pe hartă.</p>
-        <p class="text-zinc-500">Poți încerca să cauți doar numele orașului (ex: Brașov, Sibiu, Cluj) sau poți scrie manual numele lockerului în câmpul din formular.</p>
-      </div>
-    `;
-    return;
-  }
-
-  listEl.innerHTML = lockers.slice(0, 120).map((locker, idx) => `
-    <div class="p-3.5 hover:bg-[#141416] transition flex items-start justify-between gap-3">
-      <button type="button" onclick="focusEasyboxOnMap(${idx})" class="text-left flex-1 min-w-0">
-        <div class="text-xs font-medium text-white truncate">${locker.name}</div>
-        <div class="text-[11px] text-zinc-400 truncate mt-0.5">${locker.address}</div>
-        <div class="text-[10px] text-zinc-500 mt-0.5">${locker.city} · jud. ${locker.county}</div>
-      </button>
-      <button
-        type="button"
-        onclick="selectEasyboxByIndex(${idx})"
-        class="flex-shrink-0 h-8 px-3 border border-[#2a2a30] hover:border-white hover:bg-white hover:text-black text-white text-[11px] font-medium uppercase tracking-wider transition"
-      >
-        Alege
-      </button>
-    </div>
-  `).join('');
-}
-
-function focusEasyboxOnMap(idx) {
-  const locker = currentEasyboxResults[idx];
-  if (!locker || !easyboxMapInstance) return;
-  easyboxMapInstance.setView([locker.lat, locker.lon], 16);
-  if (easyboxMarkersLayer) {
-    easyboxMarkersLayer.eachLayer(layer => {
-      const pos = layer.getLatLng();
-      if (Math.abs(pos.lat - locker.lat) < 0.0001 && Math.abs(pos.lng - locker.lon) < 0.0001) {
-        layer.openPopup();
-      }
-    });
-  }
-}
-
-function selectEasyboxByIndex(idx) {
-  const locker = currentEasyboxResults[idx];
-  if (!locker) return;
-
-  const countySelect = document.getElementById('checkoutCounty');
-  const cityInput = document.getElementById('checkoutCity');
-  const addrInput = document.getElementById('checkoutAddress');
-
-  if (locker.county && countySelect) {
-    const match = ROMANIAN_COUNTIES.find(c =>
-      normalizeRoText(c) === normalizeRoText(locker.county) ||
-      normalizeRoText(locker.county).includes(normalizeRoText(c))
-    );
-    if (match) countySelect.value = match;
-  }
-
-  if (locker.city && cityInput) {
-    cityInput.value = locker.city;
-  }
-
-  if (addrInput) {
-    addrInput.value = `${locker.name} — ${locker.address}`;
-  }
-
-  closeEasyboxMapModal();
-  showToast(`Selectat: ${locker.name}`);
-}
-
 function processCheckoutOrder(e) {
   e.preventDefault();
 
-  const name = document.getElementById('checkoutName').value.trim();
+  const country = document.getElementById('checkoutCountry')?.value || 'România';
+  const firstName = document.getElementById('checkoutFirstName').value.trim();
+  const lastName = document.getElementById('checkoutLastName').value.trim();
+  const fullName = `${firstName} ${lastName}`.trim();
+  const address = document.getElementById('checkoutAddress').value.trim();
+  const apartment = document.getElementById('checkoutApartment')?.value.trim() || '';
+  const postalCode = document.getElementById('checkoutPostalCode')?.value.trim() || '';
+  const city = document.getElementById('checkoutCity').value.trim();
+  const county = document.getElementById('checkoutCounty').value;
   const phone = document.getElementById('checkoutPhone').value.trim();
   const email = document.getElementById('checkoutEmail').value.trim();
-  const county = document.getElementById('checkoutCounty').value;
-  const city = document.getElementById('checkoutCity').value.trim();
-  const address = document.getElementById('checkoutAddress').value.trim();
   const method = document.querySelector('input[name="shippingMethod"]:checked')?.value || 'easybox';
-  const methodLabel = method === 'brasov' ? 'Livrare personală în Brașov' : 'Sameday Easybox';
+  const methodLabel = method === 'brasov'
+    ? 'Livrare în Brașov'
+    : 'Sameday Easybox (cel mai apropiat de adresa clientului)';
+
+  const fullAddressLine = [
+    address,
+    apartment ? `(${apartment})` : '',
+    postalCode ? `CP ${postalCode}` : '',
+    city,
+    `jud. ${county}`,
+    country
+  ].filter(Boolean).join(', ');
 
   const t = computeTotals();
   const orderNumber = 'PL-' + Math.floor(100000 + Math.random() * 900000);
@@ -749,15 +503,19 @@ function processCheckoutOrder(e) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({
-      _subject: `Comandă nouă PURELIFT ${orderNumber} — ${name} (${methodLabel})`,
+      _subject: `Comandă nouă PURELIFT ${orderNumber} — ${fullName}`,
       Comanda: orderNumber,
-      Client: name,
+      Prenume: firstName,
+      Nume_de_familie: lastName,
       Telefon: phone,
       Email_Client: email,
-      Metoda_Livrare: methodLabel,
-      Judet: county,
+      Tara: country,
+      Adresa: address,
+      Apartament_Detalii: apartment || '-',
+      Cod_Postal: postalCode || '-',
       Localitate: city,
-      Locker_sau_Adresa: address,
+      Judet: county,
+      Metoda_Expediere: methodLabel,
       Produse: itemsText,
       Total: formatPrice(t.total)
     })
@@ -769,8 +527,8 @@ function processCheckoutOrder(e) {
   closeCheckoutModal();
 
   document.getElementById('confirmOrderNumber').textContent = orderNumber;
-  document.getElementById('confirmCustomerName').textContent = name;
-  document.getElementById('confirmDeliveryAddress').textContent = `${methodLabel} · ${address}, ${city}, jud. ${county}`;
+  document.getElementById('confirmCustomerName').textContent = fullName;
+  document.getElementById('confirmDeliveryAddress').textContent = fullAddressLine;
   document.getElementById('confirmOrderTotal').textContent = formatPrice(t.total);
   document.getElementById('orderConfirmationModal').classList.add('active');
   lockScroll(true);
@@ -794,11 +552,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Esc closes whatever is open
   document.addEventListener('keydown', ev => {
     if (ev.key !== 'Escape') return;
-    const mapModal = document.getElementById('easyboxMapModal');
-    if (mapModal && mapModal.classList.contains('active')) {
-      closeEasyboxMapModal();
-      return;
-    }
     closeSizeCalculatorModal();
     closeQuickView();
     closeCheckoutModal();

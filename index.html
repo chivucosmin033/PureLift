@@ -34,16 +34,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="bg-[#0a0a0b] text-zinc-100 antialiased min-h-screen flex flex-col">
 
   <!-- ==================== HEADER ==================== -->
   <header class="sticky top-0 z-40 glass-nav">
-    <div class="max-w-6xl mx-auto px-5 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4">
 
-      <a href="#" class="font-brand text-[17px] sm:text-lg text-white" aria-label="PURELIFT – pagina principală">PURELIFT</a>
+      <a href="#" class="font-brand text-[16px] sm:text-lg text-white" aria-label="PURELIFT – pagina principală">PURELIFT</a>
 
       <nav class="hidden md:flex items-center gap-9 text-[13px] text-zinc-400">
         <a href="#catalog" class="hover:text-white transition">Colecție</a>
@@ -56,37 +55,37 @@
         <button onclick="openCartDrawer()" class="h-10 px-3 text-[13px] text-white hover:text-zinc-300 transition" aria-label="Deschide coșul">
           Coș (<span id="cartBadge">0</span>)
         </button>
-        <button onclick="toggleMobileNav()" class="md:hidden h-10 w-10 flex items-center justify-center text-zinc-300 hover:text-white" aria-label="Meniu">
+        <button onclick="toggleMobileNav()" class="md:hidden h-10 w-10 -mr-2 flex items-center justify-center text-zinc-300 hover:text-white" aria-label="Meniu">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h16M4 16h16"></path></svg>
         </button>
       </div>
     </div>
 
-    <div id="mobileNav" class="hidden md:hidden border-t border-[#1f1f23] bg-[#0a0a0b] px-5 py-2">
-      <a href="#catalog" onclick="toggleMobileNav()" class="block py-3 text-sm text-zinc-300 hover:text-white">Colecție</a>
-      <a href="#marimi" onclick="toggleMobileNav()" class="block py-3 text-sm text-zinc-300 hover:text-white">Mărimi</a>
-      <a href="#de-ce-purelift" onclick="toggleMobileNav()" class="block py-3 text-sm text-zinc-300 hover:text-white">Despre</a>
-      <a href="#contact" onclick="toggleMobileNav()" class="block py-3 text-sm text-zinc-300 hover:text-white">Contact</a>
+    <div id="mobileNav" class="hidden md:hidden border-t border-[#1f1f23] bg-[#0a0a0b]/95 backdrop-blur-md px-4 py-1.5 divide-y divide-[#1f1f23]/60">
+      <a href="#catalog" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Colecție</a>
+      <a href="#marimi" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Ghid mărimi</a>
+      <a href="#de-ce-purelift" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Despre</a>
+      <a href="#contact" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Contact</a>
     </div>
   </header>
 
   <main class="flex-1">
     <!-- ==================== HERO ==================== -->
-    <section class="relative min-h-[64vh] md:min-h-[78vh] flex items-end md:items-center overflow-hidden">
+    <section class="relative min-h-[68vh] md:min-h-[78vh] flex items-end md:items-center overflow-hidden">
       <div class="hero-bg absolute inset-0 z-0"></div>
-      <div class="absolute inset-0 z-0 bg-gradient-to-b from-[#0a0a0b]/80 via-[#0a0a0b]/60 to-[#0a0a0b]/40 md:bg-gradient-to-r md:from-[#0a0a0b] md:via-[#0a0a0b]/75 md:to-transparent"></div>
+      <div class="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/20 md:bg-gradient-to-r md:from-[#0a0a0b] md:via-[#0a0a0b]/75 md:to-transparent"></div>
 
-      <div class="relative z-10 max-w-6xl w-full mx-auto px-5 sm:px-6 py-20 md:py-28">
+      <div class="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-24 pb-12 sm:py-20 md:py-28">
         <div class="max-w-xl">
-          <div class="eyebrow mb-5">Drop 01 · Transport inclus</div>
-          <h1 class="text-[40px] leading-[1.05] sm:text-6xl md:text-7xl font-extrabold font-unbounded uppercase text-white">
+          <div class="eyebrow mb-3.5 sm:mb-5">Drop 01 · Transport inclus</div>
+          <h1 class="text-[34px] leading-[1.06] sm:text-6xl md:text-7xl font-extrabold font-unbounded uppercase text-white">
             Made for<br />Lifters
           </h1>
-          <div class="mt-10 flex items-center gap-8">
-            <a href="#catalog" class="h-12 px-8 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] flex items-center hover:bg-zinc-200 transition">
+          <div class="mt-7 sm:mt-10 flex items-center gap-5 sm:gap-8">
+            <a href="#catalog" class="h-11 sm:h-12 px-6 sm:px-8 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] flex items-center hover:bg-zinc-200 transition">
               Vezi colecția
             </a>
-            <a href="#marimi" class="text-[13px] text-zinc-400 hover:text-white underline underline-offset-4 decoration-zinc-700 hover:decoration-white transition">
+            <a href="#marimi" class="text-[13px] text-zinc-300 sm:text-zinc-400 hover:text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition">
               Ghid mărimi
             </a>
           </div>
@@ -95,54 +94,54 @@
     </section>
 
     <!-- ==================== CATALOG ==================== -->
-    <section id="catalog" class="py-20 md:py-28 border-t border-[#1f1f23]">
-      <div class="max-w-6xl mx-auto px-5 sm:px-6">
-        <div class="flex items-end justify-between gap-4 pb-10">
+    <section id="catalog" class="py-14 sm:py-20 md:py-28 border-t border-[#1f1f23]">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4 pb-8 sm:pb-10">
           <div>
             <div class="eyebrow">Colecția 2026</div>
-            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white mt-3">Drop 01</h2>
+            <h2 class="text-2xl sm:text-4xl font-semibold tracking-tight text-white mt-2 sm:mt-3">Drop 01</h2>
           </div>
-          <p class="hidden sm:block text-sm text-zinc-500 max-w-xs text-right">80 lei · Transportul este inclus în preț.</p>
+          <p class="text-xs sm:text-sm text-zinc-400 sm:text-zinc-500 sm:max-w-xs sm:text-right">80 lei · Transportul este inclus în preț.</p>
         </div>
 
-        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14"></div>
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 sm:gap-y-14"></div>
       </div>
     </section>
 
     <!-- ==================== MĂRIMI ==================== -->
-    <section id="marimi" class="py-20 md:py-28 bg-[#111113] border-t border-[#1f1f23]">
-      <div class="max-w-6xl mx-auto px-5 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+    <section id="marimi" class="py-14 sm:py-20 md:py-28 bg-[#111113] border-t border-[#1f1f23]">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-start">
 
         <div>
           <div class="eyebrow">Potrivire</div>
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white mt-3">Ghid mărimi</h2>
-          <p class="text-[15px] text-zinc-400 leading-relaxed mt-5 max-w-md">
+          <h2 class="text-2xl sm:text-4xl font-semibold tracking-tight text-white mt-2 sm:mt-3">Ghid mărimi</h2>
+          <p class="text-sm sm:text-[15px] text-zinc-400 leading-relaxed mt-3.5 sm:mt-5 max-w-md">
             Alege mărimea ta obișnuită sau o mărime în plus dacă îl preferi mai larg.
           </p>
-          <button onclick="openSizeCalculatorModal()" class="mt-8 text-[13px] text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition">
+          <button onclick="openSizeCalculatorModal()" class="mt-5 sm:mt-8 text-[13px] text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition">
             Vezi tabelul de mărimi (cm)
           </button>
         </div>
 
-        <div class="bg-[#0a0a0b] border border-[#1f1f23] p-6 sm:p-8">
-          <div class="text-sm text-white font-medium mb-6">Calculator mărime</div>
-          <div class="grid grid-cols-2 gap-4">
+        <div class="bg-[#0a0a0b] border border-[#1f1f23] p-5 sm:p-8">
+          <div class="text-sm text-white font-medium mb-5 sm:mb-6">Calculator mărime</div>
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label for="calcHeight" class="block text-xs text-zinc-500 mb-2">Înălțime (cm)</label>
-              <input type="number" id="calcHeight" placeholder="ex. 180" min="150" max="220" class="w-full h-12 px-4 text-[15px]" />
+              <input type="number" id="calcHeight" placeholder="ex. 180" min="150" max="220" class="w-full h-11 sm:h-12 px-3.5 sm:px-4 text-base sm:text-[15px]" />
             </div>
             <div>
               <label for="calcWeight" class="block text-xs text-zinc-500 mb-2">Greutate (kg)</label>
-              <input type="number" id="calcWeight" placeholder="ex. 85" min="50" max="150" class="w-full h-12 px-4 text-[15px]" />
+              <input type="number" id="calcWeight" placeholder="ex. 85" min="50" max="150" class="w-full h-11 sm:h-12 px-3.5 sm:px-4 text-base sm:text-[15px]" />
             </div>
           </div>
-          <button onclick="calculateGymSize()" class="mt-6 w-full h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] hover:bg-zinc-200 transition">
+          <button onclick="calculateGymSize()" class="mt-5 sm:mt-6 w-full h-11 sm:h-12 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] hover:bg-zinc-200 transition">
             Calculează
           </button>
 
-          <div id="calcResultContainer" class="hidden mt-6 pt-6 border-t border-[#1f1f23] flex items-center gap-6">
-            <div id="calcRecommendedSize" class="text-4xl font-semibold text-white w-16">L</div>
-            <div id="calcAdviceText" class="text-sm text-zinc-400 leading-relaxed"></div>
+          <div id="calcResultContainer" class="hidden mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-[#1f1f23] flex items-center gap-5 sm:gap-6">
+            <div id="calcRecommendedSize" class="text-3xl sm:text-4xl font-semibold text-white w-14 sm:w-16">L</div>
+            <div id="calcAdviceText" class="text-xs sm:text-sm text-zinc-400 leading-relaxed"></div>
           </div>
         </div>
 
@@ -150,28 +149,28 @@
     </section>
 
     <!-- ==================== DE CE PURELIFT ==================== -->
-    <section id="de-ce-purelift" class="py-20 md:py-28 border-t border-[#1f1f23]">
-      <div class="max-w-6xl mx-auto px-5 sm:px-6">
-        <div class="max-w-xl mb-14">
+    <section id="de-ce-purelift" class="py-14 sm:py-20 md:py-28 border-t border-[#1f1f23]">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="max-w-xl mb-8 sm:mb-14">
           <div class="eyebrow">Despre</div>
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white mt-3">De ce <span class="font-brand text-[0.82em]">PURELIFT</span></h2>
+          <h2 class="text-2xl sm:text-4xl font-semibold tracking-tight text-white mt-2 sm:mt-3">De ce <span class="font-brand text-[0.82em]">PURELIFT</span></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 border-t border-[#1f1f23]">
-          <div class="py-8 md:pr-10 border-b md:border-b-0 md:border-r border-[#1f1f23]">
-            <div class="text-xs text-zinc-600 mb-6">01</div>
-            <h3 class="text-lg font-medium text-white">Bumbac plin, nu subțire</h3>
-            <p class="text-[15px] text-zinc-400 leading-relaxed mt-3">Bumbac 100% de 203 g/m², dens și opac. Stă bine pe corp la antrenament, nu se lipește și își păstrează forma după spălare.</p>
+          <div class="py-6 sm:py-8 md:pr-10 border-b md:border-b-0 md:border-r border-[#1f1f23]">
+            <div class="text-xs text-zinc-600 mb-3 sm:mb-6">01</div>
+            <h3 class="text-base sm:text-lg font-medium text-white">Bumbac plin, nu subțire</h3>
+            <p class="text-sm sm:text-[15px] text-zinc-400 leading-relaxed mt-2 sm:mt-3">Bumbac 100% de 203 g/m², dens și opac. Stă bine pe corp la antrenament, nu se lipește și își păstrează forma după spălare.</p>
           </div>
-          <div class="py-8 md:px-10 border-b md:border-b-0 md:border-r border-[#1f1f23]">
-            <div class="text-xs text-zinc-600 mb-6">02</div>
-            <h3 class="text-lg font-medium text-white">Fără grafică încărcată</h3>
-            <p class="text-[15px] text-zinc-400 leading-relaxed mt-3">Negru simplu și un singur detaliu discret pe piept. Îl poți purta atât în sală, cât și în afara ei.</p>
+          <div class="py-6 sm:py-8 md:px-10 border-b md:border-b-0 md:border-r border-[#1f1f23]">
+            <div class="text-xs text-zinc-600 mb-3 sm:mb-6">02</div>
+            <h3 class="text-base sm:text-lg font-medium text-white">Fără grafică încărcată</h3>
+            <p class="text-sm sm:text-[15px] text-zinc-400 leading-relaxed mt-2 sm:mt-3">Negru simplu și un singur detaliu discret pe piept. Îl poți purta atât în sală, cât și în afara ei.</p>
           </div>
-          <div class="py-8 md:pl-10">
-            <div class="text-xs text-zinc-600 mb-6">03</div>
-            <h3 class="text-lg font-medium text-white">80 lei, cu transport inclus</h3>
-            <p class="text-[15px] text-zinc-400 leading-relaxed mt-3">Preț fix și clar, fără taxe ascunse adăugate în coș. Livrarea în locker Sameday Easybox este inclusă în cei 80 lei.</p>
+          <div class="py-6 sm:py-8 md:pl-10">
+            <div class="text-xs text-zinc-600 mb-3 sm:mb-6">03</div>
+            <h3 class="text-base sm:text-lg font-medium text-white">80 lei, cu transport inclus</h3>
+            <p class="text-sm sm:text-[15px] text-zinc-400 leading-relaxed mt-2 sm:mt-3">Preț fix și clar, fără taxe ascunse adăugate în coș. Livrarea în locker Sameday Easybox este inclusă în cei 80 lei.</p>
           </div>
         </div>
       </div>
@@ -179,16 +178,16 @@
   </main>
 
   <!-- ==================== FOOTER ==================== -->
-  <footer id="contact" class="pt-20 pb-10 border-t border-[#1f1f23] text-sm text-zinc-500">
-    <div class="max-w-6xl mx-auto px-5 sm:px-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 pb-14">
+  <footer id="contact" class="pt-12 sm:pt-20 pb-8 sm:pb-10 border-t border-[#1f1f23] text-sm text-zinc-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-14">
         <div class="col-span-2 md:col-span-1">
           <a href="#" class="font-brand text-lg text-white">PURELIFT</a>
-          <p class="mt-4 leading-relaxed max-w-[240px]">Tricouri grele pentru sală. Design minimalist.</p>
+          <p class="mt-3 sm:mt-4 leading-relaxed max-w-[240px]">Tricouri grele pentru sală. Design minimalist.</p>
         </div>
 
         <div>
-          <div class="text-white text-[13px] font-medium mb-4">Magazin</div>
+          <div class="text-white text-[13px] font-medium mb-3 sm:mb-4">Magazin</div>
           <ul class="space-y-2.5">
             <li><a href="#catalog" class="hover:text-white transition">Colecție</a></li>
             <li><a href="#marimi" class="hover:text-white transition">Ghid mărimi</a></li>
@@ -197,7 +196,7 @@
         </div>
 
         <div>
-          <div class="text-white text-[13px] font-medium mb-4">Livrare și retur</div>
+          <div class="text-white text-[13px] font-medium mb-3 sm:mb-4">Livrare și retur</div>
           <ul class="space-y-2.5">
             <li>Transport inclus în preț</li>
             <li>Livrare în 24–48h</li>
@@ -205,8 +204,8 @@
           </ul>
         </div>
 
-        <div>
-          <div class="text-white text-[13px] font-medium mb-4">Contact</div>
+        <div class="col-span-2 sm:col-span-1">
+          <div class="text-white text-[13px] font-medium mb-3 sm:mb-4">Contact</div>
           <ul class="space-y-2.5">
             <li><a href="mailto:purelift.brand@gmail.com" class="hover:text-white transition">purelift.brand@gmail.com</a></li>
             <li><a href="https://www.instagram.com/_purelift_/" target="_blank" rel="noopener" class="hover:text-white transition">Instagram · @_purelift_</a></li>
@@ -227,8 +226,8 @@
   <!-- ==================== MODALS & DRAWERS ==================== -->
 
   <!-- Toast -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] transform translate-y-20 opacity-0 transition-all duration-200 pointer-events-none">
-    <div class="flex items-center gap-3 px-4 py-3 bg-[#141416] border border-[#2a2a30] text-white">
+  <div id="toastNotification" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] sm:w-auto max-w-sm transform translate-y-20 opacity-0 transition-all duration-200 pointer-events-none">
+    <div class="flex items-center justify-center sm:justify-start gap-3 px-4 py-3 bg-[#141416] border border-[#2a2a30] text-white shadow-2xl">
       <div id="toastIcon"></div>
       <span id="toastMessage" class="text-[13px]"></span>
     </div>
@@ -237,21 +236,21 @@
   <!-- Cart drawer -->
   <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="drawer-backdrop fixed inset-0 z-50 bg-black/70"></div>
   <aside id="cartDrawer" class="cart-drawer fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#0a0a0b] border-l border-[#1f1f23] flex flex-col" aria-label="Coș">
-    <div class="h-16 px-6 border-b border-[#1f1f23] flex items-center justify-between">
+    <div class="h-14 sm:h-16 px-5 sm:px-6 border-b border-[#1f1f23] flex items-center justify-between">
       <h3 class="text-sm font-medium text-white">Coșul tău</h3>
       <button onclick="closeCartDrawer()" class="h-10 w-10 -mr-2 flex items-center justify-center text-zinc-400 hover:text-white transition" aria-label="Închide coșul">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
     </div>
 
-    <div class="px-6 py-4 border-b border-[#1f1f23]">
+    <div class="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-[#1f1f23]">
       <div id="cartShippingProgressMsg" class="text-xs text-zinc-400 mb-2.5"></div>
       <div class="w-full h-px bg-[#2a2a30]">
         <div id="cartShippingProgressBar" class="h-px bg-white transition-all duration-300" style="width: 0%"></div>
       </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto px-6">
+    <div class="flex-1 overflow-y-auto px-5 sm:px-6">
       <div id="cartItemsList"></div>
       <div id="cartEmptyState" class="hidden py-20 text-center">
         <p class="text-sm text-white">Coșul este gol.</p>
@@ -261,7 +260,7 @@
       </div>
     </div>
 
-    <div id="cartFooterArea" class="px-6 py-6 border-t border-[#1f1f23] space-y-5">
+    <div id="cartFooterArea" class="px-5 sm:px-6 py-5 sm:py-6 border-t border-[#1f1f23] space-y-4 sm:space-y-5">
       <div>
         <div class="flex gap-2">
           <input type="text" id="promoCodeInput" placeholder="Cod de reducere" class="flex-1 h-11 px-3 text-sm uppercase" />
@@ -296,8 +295,8 @@
   </aside>
 
   <!-- Quick view -->
-  <div id="quickViewModal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onclick="if(event.target===this) closeQuickView()">
-    <div class="modal-content relative w-full max-w-4xl bg-[#0a0a0b] border border-[#1f1f23] p-6 sm:p-10 max-h-[90vh] overflow-y-auto">
+  <div id="quickViewModal" class="modal-container fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80" onclick="if(event.target===this) closeQuickView()">
+    <div class="modal-content relative w-full max-w-4xl bg-[#0a0a0b] border-t sm:border border-[#1f1f23] p-5 sm:p-10 max-h-[92dvh] sm:max-h-[90vh] overflow-y-auto">
       <button onclick="closeQuickView()" class="absolute top-3 right-3 h-10 w-10 flex items-center justify-center text-zinc-400 hover:text-white transition z-10" aria-label="Închide">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
@@ -306,9 +305,9 @@
   </div>
 
   <!-- Size chart -->
-  <div id="sizeCalculatorModal" class="modal-container fixed inset-0 z-[55] flex items-center justify-center p-4 bg-black/80" onclick="if(event.target===this) closeSizeCalculatorModal()">
-    <div class="modal-content relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-[#0a0a0b] border border-[#1f1f23] p-6 sm:p-8">
-      <div class="flex items-start justify-between pb-6 border-b border-[#1f1f23]">
+  <div id="sizeCalculatorModal" class="modal-container fixed inset-0 z-[55] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80" onclick="if(event.target===this) closeSizeCalculatorModal()">
+    <div class="modal-content relative w-full max-w-xl max-h-[92dvh] sm:max-h-[90vh] overflow-y-auto bg-[#0a0a0b] border-t sm:border border-[#1f1f23] p-5 sm:p-8">
+      <div class="flex items-start justify-between pb-5 sm:pb-6 border-b border-[#1f1f23]">
         <div>
           <h3 class="text-lg font-medium text-white">Tabel mărimi</h3>
           <p class="text-xs text-zinc-500 mt-1">Măsurători în cm, pe produsul întins plat.</p>
@@ -318,7 +317,7 @@
         </button>
       </div>
 
-      <table class="w-full text-sm text-left mt-6">
+      <table class="w-full text-sm text-left mt-5 sm:mt-6">
         <thead class="text-xs text-zinc-500 border-b border-[#1f1f23]">
           <tr>
             <th class="py-3 font-medium">Mărime</th>
@@ -335,7 +334,7 @@
         </tbody>
       </table>
 
-      <div class="mt-8 flex flex-col sm:flex-row items-center gap-6">
+      <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
         <svg class="w-28 h-24 flex-shrink-0" viewBox="0 0 160 140" fill="none">
           <path d="M52 26 C64 34, 96 34, 108 26 L142 50 L126 72 L112 62 L112 124 L48 124 L48 62 L34 72 L18 50 Z" stroke="#52525b" stroke-width="1.5" stroke-linejoin="round" fill="#111113" />
           <path d="M60 26 C68 38, 92 38, 100 26" stroke="#52525b" stroke-width="1.5" stroke-linecap="round" />
@@ -356,46 +355,87 @@
   </div>
 
   <!-- Checkout -->
-  <div id="checkoutModal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85">
-    <div class="modal-content relative w-full max-w-2xl bg-[#0a0a0b] border border-[#1f1f23] p-6 sm:p-10 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-start justify-between pb-6 mb-8 border-b border-[#1f1f23]">
+  <div id="checkoutModal" class="modal-container fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85">
+    <div class="modal-content relative w-full max-w-2xl bg-[#0a0a0b] border-t sm:border border-[#1f1f23] p-5 sm:p-10 max-h-[93dvh] sm:max-h-[92vh] overflow-y-auto">
+      <div class="flex items-start justify-between pb-5 sm:pb-6 mb-6 sm:mb-8 border-b border-[#1f1f23]">
         <div>
-          <h3 class="text-xl font-medium text-white">Finalizare comandă</h3>
-          <p class="text-xs text-zinc-500 mt-1">Livrăm în toată România.</p>
+          <h3 class="text-lg sm:text-xl font-medium text-white">Finalizare comandă</h3>
+          <p class="text-xs text-zinc-500 mt-1">Transport inclus · Livrăm în toată România.</p>
         </div>
         <button onclick="closeCheckoutModal()" class="h-10 w-10 -mr-2 -mt-2 flex items-center justify-center text-zinc-400 hover:text-white transition" aria-label="Închide">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
-      <form onsubmit="processCheckoutOrder(event)" class="space-y-10">
+      <form onsubmit="processCheckoutOrder(event)" class="space-y-8 sm:space-y-10">
         <fieldset>
-          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-500 mb-4">1 · Contact</legend>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-400 font-medium mb-4">Livrare</legend>
+          <div class="space-y-3.5 sm:space-y-4">
             <div>
-              <label for="checkoutName" class="block text-xs text-zinc-400 mb-2">Nume și prenume</label>
-              <input type="text" id="checkoutName" required autocomplete="name" class="w-full h-12 px-4 text-sm" />
+              <label for="checkoutCountry" class="block text-xs text-zinc-400 mb-1.5">Țară / Regiune</label>
+              <select id="checkoutCountry" class="w-full h-12 px-4 text-sm bg-[#111113]">
+                <option value="România" selected>România</option>
+              </select>
             </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label for="checkoutFirstName" class="block text-xs text-zinc-400 mb-1.5">Prenume</label>
+                <input type="text" id="checkoutFirstName" required autocomplete="given-name" placeholder="Prenume" class="w-full h-12 px-4 text-sm" />
+              </div>
+              <div>
+                <label for="checkoutLastName" class="block text-xs text-zinc-400 mb-1.5">Nume de familie</label>
+                <input type="text" id="checkoutLastName" required autocomplete="family-name" placeholder="Nume de familie" class="w-full h-12 px-4 text-sm" />
+              </div>
+            </div>
+
             <div>
-              <label for="checkoutPhone" class="block text-xs text-zinc-400 mb-2">Telefon</label>
-              <input type="tel" id="checkoutPhone" required autocomplete="tel" placeholder="07xx xxx xxx" class="w-full h-12 px-4 text-sm" />
+              <label for="checkoutAddress" class="block text-xs text-zinc-400 mb-1.5">Adresă</label>
+              <input type="text" id="checkoutAddress" required autocomplete="street-address" placeholder="Stradă și număr" class="w-full h-12 px-4 text-sm" />
             </div>
-            <div class="sm:col-span-2">
-              <label for="checkoutEmail" class="block text-xs text-zinc-400 mb-2">Email</label>
-              <input type="email" id="checkoutEmail" required autocomplete="email" class="w-full h-12 px-4 text-sm" />
+
+            <div>
+              <label for="checkoutApartment" class="block text-xs text-zinc-400 mb-1.5">Apartament, cameră etc. (opțional)</label>
+              <input type="text" id="checkoutApartment" autocomplete="address-line2" placeholder="Bloc, scară, etaj, apartament (opțional)" class="w-full h-12 px-4 text-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+              <div>
+                <label for="checkoutPostalCode" class="block text-xs text-zinc-400 mb-1.5">Cod poștal (opțional)</label>
+                <input type="text" id="checkoutPostalCode" autocomplete="postal-code" placeholder="Cod poștal" class="w-full h-12 px-4 text-sm" />
+              </div>
+              <div>
+                <label for="checkoutCity" class="block text-xs text-zinc-400 mb-1.5">Localitate</label>
+                <input type="text" id="checkoutCity" required autocomplete="address-level2" placeholder="Localitate" class="w-full h-12 px-4 text-sm" />
+              </div>
+              <div>
+                <label for="checkoutCounty" class="block text-xs text-zinc-400 mb-1.5">Județ</label>
+                <select id="checkoutCounty" required class="w-full h-12 px-4 text-sm"></select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label for="checkoutPhone" class="block text-xs text-zinc-400 mb-1.5">Telefon</label>
+                <input type="tel" id="checkoutPhone" required autocomplete="tel" placeholder="07xx xxx xxx" class="w-full h-12 px-4 text-sm" />
+              </div>
+              <div>
+                <label for="checkoutEmail" class="block text-xs text-zinc-400 mb-1.5">Email</label>
+                <input type="email" id="checkoutEmail" required autocomplete="email" placeholder="exemplu@email.ro" class="w-full h-12 px-4 text-sm" />
+              </div>
             </div>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-500 mb-4">2 · Metodă de livrare (transport inclus)</legend>
+          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-400 font-medium mb-3.5">Metodă de expediere</legend>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label class="p-4 border border-[#2a2a30] flex items-center justify-between cursor-pointer hover:border-zinc-500 transition has-[:checked]:border-white">
               <span class="flex items-center gap-3">
                 <input type="radio" name="shippingMethod" value="easybox" checked class="accent-white" />
                 <span>
                   <span class="block text-sm text-white">Sameday Easybox</span>
-                  <span class="block text-xs text-zinc-500">Ridicare din locker 24/7</span>
+                  <span class="block text-xs text-zinc-500">La cel mai apropiat Easybox de adresa ta</span>
                 </span>
               </span>
               <span class="text-xs text-zinc-400">Inclus</span>
@@ -414,44 +454,17 @@
         </fieldset>
 
         <fieldset>
-          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-500 mb-4">3 · Detalii livrare</legend>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="checkoutCounty" class="block text-xs text-zinc-400 mb-2">Județ</label>
-              <select id="checkoutCounty" required class="w-full h-12 px-4 text-sm"></select>
-            </div>
-            <div>
-              <label for="checkoutCity" class="block text-xs text-zinc-400 mb-2">Localitate</label>
-              <input type="text" id="checkoutCity" required autocomplete="address-level2" class="w-full h-12 px-4 text-sm" />
-            </div>
-            <div class="sm:col-span-2">
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <label id="checkoutAddressLabel" for="checkoutAddress" class="block text-xs text-zinc-400">Locker Sameday Easybox</label>
-                <a id="easyboxExternalLink" href="https://sameday.ro/easybox/" target="_blank" rel="noopener" class="text-[11px] text-zinc-500 hover:text-white underline underline-offset-2 transition">sameday.ro/easybox ↗</a>
-              </div>
-              <div class="flex flex-col sm:flex-row gap-2.5">
-                <input type="text" id="checkoutAddress" required placeholder="Alege de pe hartă sau scrie numele lockerului" class="flex-1 h-12 px-4 text-sm" />
-                <button type="button" id="openEasyboxMapBtn" onclick="openSamedayLockerMap()" class="h-12 px-5 border border-white bg-[#141416] hover:bg-white hover:text-black text-white text-xs font-semibold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition whitespace-nowrap">
-                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                  <span>Harta Easybox</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-500 mb-4">4 · Plată</legend>
+          <legend class="text-xs uppercase tracking-[0.14em] text-zinc-400 font-medium mb-3.5">Plată</legend>
           <label class="p-4 border border-white flex items-center gap-3">
             <input type="radio" name="paymentMethod" value="ramburs" checked class="accent-white" />
             <span>
               <span class="block text-sm text-white">Plată la ridicarea coletului</span>
-              <span class="block text-xs text-zinc-500">Plătești cu cardul direct la ecranul lockerului Easybox (sau la primire, în Brașov)</span>
+              <span class="block text-xs text-zinc-500">Cu cardul la ecranul lockerului Easybox (sau la primire, în Brașov)</span>
             </span>
           </label>
         </fieldset>
 
-        <div class="pt-6 border-t border-[#1f1f23] space-y-2">
+        <div class="pt-5 sm:pt-6 border-t border-[#1f1f23] space-y-2">
           <div id="checkoutItemsList" class="pb-3"></div>
           <div class="flex justify-between text-sm text-zinc-400"><span>Subtotal</span><span id="checkoutSubtotal" class="text-white"></span></div>
           <div class="flex justify-between text-sm text-zinc-400"><span>Livrare</span><span id="checkoutShipping" class="text-white"></span></div>
@@ -468,57 +481,9 @@
     </div>
   </div>
 
-  <!-- Harta interactivă Sameday Easybox România -->
-  <div id="easyboxMapModal" class="modal-container fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-6 bg-black/90">
-    <div class="modal-content relative w-full max-w-5xl bg-[#0a0a0b] border border-[#2a2a30] flex flex-col max-h-[92vh]">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-[#1f1f23]">
-        <div>
-          <h3 class="text-base sm:text-lg font-medium text-white">Harta Sameday Easybox · România</h3>
-          <p class="text-xs text-zinc-400 mt-0.5">Caută orașul sau cartierul și apasă pe un locker pentru a-l selecta.</p>
-        </div>
-        <button type="button" onclick="closeEasyboxMapModal()" class="h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-white transition" aria-label="Închide harta">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <div class="p-4 border-b border-[#1f1f23] bg-[#111113]">
-        <div class="flex flex-col sm:flex-row gap-2.5">
-          <input
-            type="text"
-            id="easyboxSearchInput"
-            placeholder="Caută oraș, cartier sau stradă (ex: Brașov, Coresi, București, Cluj...)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();searchEasyboxMap();}"
-            class="flex-1 h-11 px-4 text-sm bg-[#0a0a0b]"
-          />
-          <div class="flex gap-2">
-            <button type="button" onclick="searchEasyboxMap()" class="h-11 px-5 bg-white text-black text-xs font-semibold uppercase tracking-[0.12em] hover:bg-zinc-200 transition">
-              Caută
-            </button>
-            <button type="button" onclick="resetEasyboxMapToRomania()" class="h-11 px-4 border border-[#2a2a30] text-zinc-300 hover:border-white hover:text-white text-xs uppercase tracking-[0.1em] transition">
-              Toată țara
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 overflow-hidden">
-        <div class="lg:col-span-8 relative h-[320px] sm:h-[420px] lg:h-[480px] border-b lg:border-b-0 lg:border-r border-[#1f1f23]">
-          <div id="easyboxLeafletMap" class="w-full h-full"></div>
-        </div>
-        <div class="lg:col-span-4 flex flex-col h-[240px] sm:h-[260px] lg:h-[480px] bg-[#0a0a0b]">
-          <div class="px-4 py-2.5 border-b border-[#1f1f23] flex items-center justify-between text-xs text-zinc-400">
-            <span id="easyboxResultsCount">Lockere disponibile</span>
-            <span class="text-[11px] text-zinc-500">Click pentru selectare</span>
-          </div>
-          <div id="easyboxListContainer" class="flex-1 overflow-y-auto divide-y divide-[#1f1f23]"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Order confirmation -->
   <div id="orderConfirmationModal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
-    <div class="modal-content relative w-full max-w-md bg-[#0a0a0b] border border-[#1f1f23] p-8 sm:p-10 text-center">
+    <div class="modal-content relative w-full max-w-md bg-[#0a0a0b] border border-[#1f1f23] p-6 sm:p-10 text-center">
       <div class="w-12 h-12 mx-auto border border-white text-white flex items-center justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path></svg>
       </div>
@@ -543,8 +508,6 @@
       document.getElementById('mobileNav')?.classList.toggle('hidden');
     }
   </script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="easybox-lockers.js"></script>
   <script src="products.js"></script>
   <script src="app.js"></script>
 </body>
