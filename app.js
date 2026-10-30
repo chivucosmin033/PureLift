@@ -433,38 +433,40 @@ function calculateGymSize() {
     return;
   }
 
-  // Circumferința estimată a pieptului (conform modelului antropometric Gildan Hammer)
-  const estChestCirc = Math.round(60 + 0.54 * weight - 0.03 * (height - 175));
+  // Ajustare în funcție de croiala dorită:
+  // - Pe corp (mulat): -6 kg (recomandă mărimea mai strânsă pe piept/brațe)
+  // - Normal: 0 kg (S: <67 kg, M: 67–79 kg, L: 80–92 kg, XL: 93+ kg)
+  // - Lejer / Sală (oversized / pump cover): +10 kg (recomandă mărimea mai largă)
+  const fitShift = selectedCalcFit === 'mulat' ? -6 : selectedCalcFit === 'lejer' ? 10 : 0;
+  const effectiveWeight = weight + fitShift;
 
-  // Lejeritatea („aerul”) în jurul pieptului în funcție de preferință:
-  // - Pe corp (mulat): ~5 cm
-  // - Normal: ~11 cm (exact ca pe tricouriengross pentru Gildan Hammer)
-  // - Lejer / Sală (pump cover): ~17 cm
-  const easeMap = { mulat: 5, normal: 11, lejer: 17 };
-  const targetCirc = estChestCirc + (easeMap[selectedCalcFit] || 11);
-
-  // Alegem mărimea din tabelul Gildan Hammer (S=91.4, M=101.6, L=111.8, XL=122.0)
+  // Alegem mărimea pe baza dimensiunilor reale Gildan Hammer:
+  // S (45,7 cm piept), M (50,8 cm piept), L (55,9 cm piept), XL (61,0 cm piept)
   let idx = 0;
-  if (targetCirc <= 94) idx = 0;        // S (45,7 cm lățime)
-  else if (targetCirc <= 104.5) idx = 1; // M (50,8 cm lățime)
-  else if (targetCirc <= 115) idx = 2;   // L (55,9 cm lățime)
-  else idx = 3;                          // XL (61,0 cm lățime)
+  if (effectiveWeight < 67) idx = 0;       // S
+  else if (effectiveWeight < 80) idx = 1;  // M (67–79 kg pe Normal -> 175 cm / 70 kg = M)
+  else if (effectiveWeight < 93) idx = 2;  // L (80–92 kg pe Normal)
+  else idx = 3;                            // XL (93+ kg pe Normal)
 
-  // Corecție de lungime pentru persoane înalte (S=71.1 cm, M=73.7 cm, L=76.2 cm, XL=78.7 cm)
-  if (height >= 182 && idx < 1) idx = 1;
-  if (height >= 187 && idx < 2) idx = 2;
-  if (height >= 194 && idx < 3) idx = 3;
+  // Corecție de lungime pentru persoane înalte (doar pe Normal și Lejer)
+  if (selectedCalcFit !== 'mulat') {
+    if (height >= 180 && idx < 1) idx = 1; // minim M peste 180 cm (73,7 cm lungime)
+    if (height >= 186 && idx < 2) idx = 2; // minim L peste 186 cm (76,2 cm lungime)
+    if (height >= 193 && idx < 3) idx = 3; // minim XL peste 193 cm (78,7 cm lungime)
+  }
 
   const chosen = HAMMER_SIZES[idx];
   const fitLabel = selectedCalcFit === 'mulat' ? 'pe corp' : selectedCalcFit === 'lejer' ? 'lejer / sală' : 'normal';
 
   let altNote = '';
-  if (selectedCalcFit === 'normal' && idx < 3 && (chosen.circCm - estChestCirc) <= 10) {
-    const nextSize = HAMMER_SIZES[idx + 1];
-    altNote = ` Dacă îl preferi mai larg la antrenament, poți alege <span class="text-white font-medium">${nextSize.size}</span> (${nextSize.widthCm} cm piept).`;
-  } else if (selectedCalcFit === 'normal' && idx > 0 && (chosen.circCm - estChestCirc) >= 14) {
-    const prevSize = HAMMER_SIZES[idx - 1];
-    altNote = ` Dacă îl vrei mai strâns pe corp, poți alege <span class="text-white font-medium">${prevSize.size}</span> (${prevSize.widthCm} cm piept).`;
+  if (selectedCalcFit === 'normal') {
+    if (weight >= 76 && weight < 80 && idx === 1) {
+      altNote = ` Ești aproape de limita superioară pentru M — dacă îl vrei mai larg la sală, poți alege <span class="text-white font-medium">L</span> (55,9 cm piept).`;
+    } else if (weight >= 89 && weight < 93 && idx === 2) {
+      altNote = ` Dacă îl preferi mai larg pe umeri și piept, poți alege <span class="text-white font-medium">XL</span> (61,0 cm piept).`;
+    } else if (weight >= 67 && weight <= 70 && idx === 1) {
+      altNote = ` Îți va veni comod și relaxat; dacă îl vrei foarte strâns pe corp, poți alege <span class="text-white font-medium">S</span> (45,7 cm piept).`;
+    }
   }
 
   document.getElementById('calcRecommendedSize').textContent = chosen.size;
