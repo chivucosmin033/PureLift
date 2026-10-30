@@ -397,31 +397,13 @@ function closeSizeCalculatorModal() {
   document.getElementById('sizeCalculatorModal')?.classList.remove('active');
 }
 
-// ---------- Size calculator (calibrat pe tabelul Gildan Hammer 203 g/m²) ----------
-let selectedCalcFit = 'normal';
-
+// ---------- Size calculator (calibrat pe Gildan Hammer 203 g/m² — croială normală puțin spre fit) ----------
 const HAMMER_SIZES = [
-  { size: 'S',  lengthCm: '71,1', widthCm: '45,7', sleeveCm: '41,3', circCm: 91.4 },
-  { size: 'M',  lengthCm: '73,7', widthCm: '50,8', sleeveCm: '45,4', circCm: 101.6 },
-  { size: 'L',  lengthCm: '76,2', widthCm: '55,9', sleeveCm: '48,6', circCm: 111.8 },
-  { size: 'XL', lengthCm: '78,7', widthCm: '61,0', sleeveCm: '52,4', circCm: 122.0 }
+  { size: 'S',  lengthCm: '71,1', widthCm: '45,7', sleeveCm: '41,3' },
+  { size: 'M',  lengthCm: '73,7', widthCm: '50,8', sleeveCm: '45,4' },
+  { size: 'L',  lengthCm: '76,2', widthCm: '55,9', sleeveCm: '48,6' },
+  { size: 'XL', lengthCm: '78,7', widthCm: '61,0', sleeveCm: '52,4' }
 ];
-
-function selectCalcFit(fit) {
-  selectedCalcFit = fit;
-  document.querySelectorAll('#calcFitGroup .calc-fit-btn').forEach(btn => {
-    const isSelected = btn.getAttribute('data-fit') === fit;
-    btn.classList.remove('border-white', 'bg-white', 'text-black', 'font-medium', 'border-[#2a2a30]', 'text-zinc-400', 'hover:border-white', 'hover:text-white');
-    if (isSelected) {
-      btn.classList.add('border-white', 'bg-white', 'text-black', 'font-medium');
-    } else {
-      btn.classList.add('border-[#2a2a30]', 'text-zinc-400', 'hover:border-white', 'hover:text-white');
-    }
-  });
-  const h = document.getElementById('calcHeight')?.value;
-  const w = document.getElementById('calcWeight')?.value;
-  if (h && w) calculateGymSize();
-}
 
 function calculateGymSize() {
   const height = parseFloat(document.getElementById('calcHeight').value);
@@ -433,46 +415,35 @@ function calculateGymSize() {
     return;
   }
 
-  // Ajustare în funcție de croiala dorită:
-  // - Pe corp (mulat): -6 kg (recomandă mărimea mai strânsă pe piept/brațe)
-  // - Normal: 0 kg (S: <67 kg, M: 67–79 kg, L: 80–92 kg, XL: 93+ kg)
-  // - Lejer / Sală (oversized / pump cover): +10 kg (recomandă mărimea mai largă)
-  const fitShift = selectedCalcFit === 'mulat' ? -6 : selectedCalcFit === 'lejer' ? 10 : 0;
-  const effectiveWeight = weight + fitShift;
-
-  // Alegem mărimea pe baza dimensiunilor reale Gildan Hammer:
-  // S (45,7 cm piept), M (50,8 cm piept), L (55,9 cm piept), XL (61,0 cm piept)
+  // Alegem mărimea pe baza dimensiunilor reale Gildan Hammer pentru un fit normal-atletic (puțin spre fit):
+  // S (45,7 cm piept · 71,1 cm lungime): sub 68 kg
+  // M (50,8 cm piept · 73,7 cm lungime): 68 – 81 kg (ex. 175 cm / 70–80 kg = M)
+  // L (55,9 cm piept · 76,2 cm lungime): 82 – 94 kg
+  // XL (61,0 cm piept · 78,7 cm lungime): 95+ kg
   let idx = 0;
-  if (effectiveWeight < 67) idx = 0;       // S
-  else if (effectiveWeight < 80) idx = 1;  // M (67–79 kg pe Normal -> 175 cm / 70 kg = M)
-  else if (effectiveWeight < 93) idx = 2;  // L (80–92 kg pe Normal)
-  else idx = 3;                            // XL (93+ kg pe Normal)
+  if (weight < 68) idx = 0;       // S
+  else if (weight < 82) idx = 1;  // M
+  else if (weight < 95) idx = 2;  // L
+  else idx = 3;                   // XL
 
-  // Corecție de lungime pentru persoane înalte (doar pe Normal și Lejer)
-  if (selectedCalcFit !== 'mulat') {
-    if (height >= 180 && idx < 1) idx = 1; // minim M peste 180 cm (73,7 cm lungime)
-    if (height >= 186 && idx < 2) idx = 2; // minim L peste 186 cm (76,2 cm lungime)
-    if (height >= 193 && idx < 3) idx = 3; // minim XL peste 193 cm (78,7 cm lungime)
-  }
+  // Corecție de lungime pentru persoane înalte
+  if (height >= 182 && idx < 1) idx = 1; // minim M peste 182 cm (73,7 cm lungime)
+  if (height >= 188 && idx < 2) idx = 2; // minim L peste 188 cm (76,2 cm lungime)
+  if (height >= 194 && idx < 3) idx = 3; // minim XL peste 194 cm (78,7 cm lungime)
 
   const chosen = HAMMER_SIZES[idx];
-  const fitLabel = selectedCalcFit === 'mulat' ? 'pe corp' : selectedCalcFit === 'lejer' ? 'lejer / sală' : 'normal';
 
   let altNote = '';
-  if (selectedCalcFit === 'normal') {
-    if (weight >= 76 && weight < 80 && idx === 1) {
-      altNote = ` Ești aproape de limita superioară pentru M — dacă îl vrei mai larg la sală, poți alege <span class="text-white font-medium">L</span> (55,9 cm piept).`;
-    } else if (weight >= 89 && weight < 93 && idx === 2) {
-      altNote = ` Dacă îl preferi mai larg pe umeri și piept, poți alege <span class="text-white font-medium">XL</span> (61,0 cm piept).`;
-    } else if (weight >= 67 && weight <= 70 && idx === 1) {
-      altNote = ` Îți va veni comod și relaxat; dacă îl vrei foarte strâns pe corp, poți alege <span class="text-white font-medium">S</span> (45,7 cm piept).`;
-    }
+  if (weight >= 79 && weight < 82 && idx === 1) {
+    altNote = ` Dacă îl preferi mai lejer în umeri, poți alege <span class="text-white font-medium">L</span> (55,9 cm piept).`;
+  } else if (weight >= 92 && weight < 95 && idx === 2) {
+    altNote = ` Dacă îl preferi mai lejer, poți alege <span class="text-white font-medium">XL</span> (61,0 cm piept).`;
   }
 
   document.getElementById('calcRecommendedSize').textContent = chosen.size;
   document.getElementById('calcAdviceText').innerHTML =
-    `Pentru <span class="text-white">${Math.round(height)} cm</span> și <span class="text-white">${Math.round(weight)} kg</span> (fit ${fitLabel}) recomandăm <span class="text-white font-semibold">${chosen.size}</span> ` +
-    `<span class="text-zinc-300">(piept ${chosen.widthCm} cm · lungime ${chosen.lengthCm} cm)</span>.${altNote}`;
+    `Pentru <span class="text-white">${Math.round(height)} cm</span> și <span class="text-white">${Math.round(weight)} kg</span> recomandăm mărimea <span class="text-white font-semibold">${chosen.size}</span> ` +
+    `<span class="text-zinc-300">(${chosen.widthCm} cm piept · ${chosen.lengthCm} cm lungime)</span>.${altNote}`;
   resultContainer.classList.remove('hidden');
 }
 
