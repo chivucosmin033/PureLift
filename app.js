@@ -397,30 +397,80 @@ function closeSizeCalculatorModal() {
   document.getElementById('sizeCalculatorModal')?.classList.remove('active');
 }
 
-// ---------- Size calculator ----------
+// ---------- Size calculator (calibrat pe tabelul Gildan Hammer 203 g/m²) ----------
+let selectedCalcFit = 'normal';
+
+const HAMMER_SIZES = [
+  { size: 'S',  lengthCm: '71,1', widthCm: '45,7', sleeveCm: '41,3', circCm: 91.4 },
+  { size: 'M',  lengthCm: '73,7', widthCm: '50,8', sleeveCm: '45,4', circCm: 101.6 },
+  { size: 'L',  lengthCm: '76,2', widthCm: '55,9', sleeveCm: '48,6', circCm: 111.8 },
+  { size: 'XL', lengthCm: '78,7', widthCm: '61,0', sleeveCm: '52,4', circCm: 122.0 }
+];
+
+function selectCalcFit(fit) {
+  selectedCalcFit = fit;
+  document.querySelectorAll('#calcFitGroup .calc-fit-btn').forEach(btn => {
+    const isSelected = btn.getAttribute('data-fit') === fit;
+    btn.classList.remove('border-white', 'bg-white', 'text-black', 'font-medium', 'border-[#2a2a30]', 'text-zinc-400', 'hover:border-white', 'hover:text-white');
+    if (isSelected) {
+      btn.classList.add('border-white', 'bg-white', 'text-black', 'font-medium');
+    } else {
+      btn.classList.add('border-[#2a2a30]', 'text-zinc-400', 'hover:border-white', 'hover:text-white');
+    }
+  });
+  const h = document.getElementById('calcHeight')?.value;
+  const w = document.getElementById('calcWeight')?.value;
+  if (h && w) calculateGymSize();
+}
+
 function calculateGymSize() {
-  const height = parseInt(document.getElementById('calcHeight').value, 10);
-  const weight = parseInt(document.getElementById('calcWeight').value, 10);
+  const height = parseFloat(document.getElementById('calcHeight').value);
+  const weight = parseFloat(document.getElementById('calcWeight').value);
   const resultContainer = document.getElementById('calcResultContainer');
 
-  if (!height || !weight) {
-    showToast('Completează înălțimea și greutatea', 'error');
+  if (!height || !weight || height < 140 || height > 230 || weight < 40 || weight > 180) {
+    showToast('Completează o înălțime (140–220 cm) și o greutate validă', 'error');
     return;
   }
 
-  let recommended;
-  if (weight < 70) recommended = 'S';
-  else if (weight < 80) recommended = 'M';
-  else if (weight < 92) recommended = 'L';
-  else recommended = 'XL';
+  // Circumferința estimată a pieptului (conform modelului antropometric Gildan Hammer)
+  const estChestCirc = Math.round(60 + 0.54 * weight - 0.03 * (height - 175));
 
-  // Very tall lifters get one size up for length (max XL)
-  const order = ['S', 'M', 'L', 'XL'];
-  if (height >= 190 && recommended !== 'XL') recommended = order[order.indexOf(recommended) + 1];
+  // Lejeritatea („aerul”) în jurul pieptului în funcție de preferință:
+  // - Pe corp (mulat): ~5 cm
+  // - Normal: ~11 cm (exact ca pe tricouriengross pentru Gildan Hammer)
+  // - Lejer / Sală (pump cover): ~17 cm
+  const easeMap = { mulat: 5, normal: 11, lejer: 17 };
+  const targetCirc = estChestCirc + (easeMap[selectedCalcFit] || 11);
 
-  document.getElementById('calcRecommendedSize').textContent = recommended;
+  // Alegem mărimea din tabelul Gildan Hammer (S=91.4, M=101.6, L=111.8, XL=122.0)
+  let idx = 0;
+  if (targetCirc <= 94) idx = 0;        // S (45,7 cm lățime)
+  else if (targetCirc <= 104.5) idx = 1; // M (50,8 cm lățime)
+  else if (targetCirc <= 115) idx = 2;   // L (55,9 cm lățime)
+  else idx = 3;                          // XL (61,0 cm lățime)
+
+  // Corecție de lungime pentru persoane înalte (S=71.1 cm, M=73.7 cm, L=76.2 cm, XL=78.7 cm)
+  if (height >= 182 && idx < 1) idx = 1;
+  if (height >= 187 && idx < 2) idx = 2;
+  if (height >= 194 && idx < 3) idx = 3;
+
+  const chosen = HAMMER_SIZES[idx];
+  const fitLabel = selectedCalcFit === 'mulat' ? 'pe corp' : selectedCalcFit === 'lejer' ? 'lejer / sală' : 'normal';
+
+  let altNote = '';
+  if (selectedCalcFit === 'normal' && idx < 3 && (chosen.circCm - estChestCirc) <= 10) {
+    const nextSize = HAMMER_SIZES[idx + 1];
+    altNote = ` Dacă îl preferi mai larg la antrenament, poți alege <span class="text-white font-medium">${nextSize.size}</span> (${nextSize.widthCm} cm piept).`;
+  } else if (selectedCalcFit === 'normal' && idx > 0 && (chosen.circCm - estChestCirc) >= 14) {
+    const prevSize = HAMMER_SIZES[idx - 1];
+    altNote = ` Dacă îl vrei mai strâns pe corp, poți alege <span class="text-white font-medium">${prevSize.size}</span> (${prevSize.widthCm} cm piept).`;
+  }
+
+  document.getElementById('calcRecommendedSize').textContent = chosen.size;
   document.getElementById('calcAdviceText').innerHTML =
-    `Pentru ${height} cm și ${weight} kg recomandăm <span class="text-white">${recommended}</span>. Dacă vrei un fit mai larg, alege o mărime în plus.`;
+    `Pentru <span class="text-white">${Math.round(height)} cm</span> și <span class="text-white">${Math.round(weight)} kg</span> (fit ${fitLabel}) recomandăm <span class="text-white font-semibold">${chosen.size}</span> ` +
+    `<span class="text-zinc-300">(piept ${chosen.widthCm} cm · lungime ${chosen.lengthCm} cm)</span>.${altNote}`;
   resultContainer.classList.remove('hidden');
 }
 
