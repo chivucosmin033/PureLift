@@ -637,21 +637,11 @@ function saveCustomerReviews(list) {
 
 async function fetchSharedReviews() {
   try {
-    const res = await fetch(`${GAS_WEBAPP_URL}?action=reviews`, { method: 'GET' });
+    const res = await fetch(`${GAS_WEBAPP_URL}?action=reviews&t=${Date.now()}`, { method: 'GET' });
     if (!res.ok) return;
     const data = await res.json();
     if (data && Array.isArray(data.reviews)) {
-      // Combinăm recenziile de pe server cu cele locale (fără duplicate)
-      const local = loadCustomerReviews();
-      const map = new Map();
-      [...data.reviews, ...local].forEach(r => {
-        if (r && r.author && r.text) {
-          const key = `${r.author}|${r.text}|${r.date || ''}`;
-          if (!map.has(key)) map.set(key, r);
-        }
-      });
-      const merged = Array.from(map.values());
-      saveCustomerReviews(merged);
+      saveCustomerReviews(data.reviews);
       renderReviews();
     }
   } catch (e) {}
@@ -837,7 +827,9 @@ async function submitCustomerReview(event) {
   }
 
   const today = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' });
+  const reviewId = 'rev_' + Date.now() + '_' + Math.floor(1000 + Math.random() * 9000);
   const newReview = {
+    id: reviewId,
     author,
     product,
     size,
@@ -849,20 +841,15 @@ async function submitCustomerReview(event) {
 
   if (btn) {
     btn.disabled = true;
-    btn.textContent = 'Se publică...';
+    btn.textContent = 'Se trimite...';
   }
-
-  const list = loadCustomerReviews();
-  list.unshift(newReview);
-  saveCustomerReviews(list);
-  renderReviews();
 
   try {
     await fetch(GAS_WEBAPP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
-        _subject: `Recenzie nouă PURELIFT (${selectedReviewRating}/5) — ${author}`,
+        _subject: `Recenzie nouă de aprobat PURELIFT (${selectedReviewRating}/5) — ${author}`,
         Tip: 'RECENZIE CLIENT',
         Client: author,
         Evaluare: `${selectedReviewRating} / 5 stele`,
@@ -874,19 +861,19 @@ async function submitCustomerReview(event) {
         reviewObj: newReview
       })
     });
-    fetchSharedReviews();
-  } catch (e) {}
-
-  if (btn) {
-    btn.disabled = false;
-    btn.textContent = 'Publică recenzia';
+    document.getElementById('reviewForm')?.reset();
+    clearReviewPhoto();
+    selectReviewRating(5);
+    document.getElementById('reviewFormWrapper')?.classList.add('hidden');
+    showToast('Mulțumim! Recenzia a fost trimisă și va apărea după verificare.');
+  } catch (e) {
+    showToast('Eroare la trimitere — încearcă din nou', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Publică recenzia';
+    }
   }
-
-  document.getElementById('reviewForm')?.reset();
-  clearReviewPhoto();
-  selectReviewRating(5);
-  document.getElementById('reviewFormWrapper')?.classList.add('hidden');
-  showToast('Mulțumim! Recenzia ta a fost adăugată.');
 }
 
 // ---------- Init ----------
