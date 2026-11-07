@@ -48,6 +48,7 @@
         <a href="#catalog" class="hover:text-white transition">Colecție</a>
         <a href="#marimi" class="hover:text-white transition">Mărimi</a>
         <a href="#de-ce-purelift" class="hover:text-white transition">Despre</a>
+        <a href="#recenzii" class="hover:text-white transition">Recenzii</a>
         <a href="#contact" class="hover:text-white transition">Contact</a>
       </nav>
 
@@ -65,6 +66,7 @@
       <a href="#catalog" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Colecție</a>
       <a href="#marimi" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Ghid mărimi</a>
       <a href="#de-ce-purelift" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Despre</a>
+      <a href="#recenzii" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Recenzii</a>
       <a href="#contact" onclick="toggleMobileNav()" class="block py-3.5 text-sm text-zinc-200 hover:text-white">Contact</a>
     </div>
   </header>
@@ -176,6 +178,107 @@
         </div>
       </div>
     </section>
+
+    <!-- ==================== RECENZII ==================== -->
+    <section id="recenzii" class="py-14 sm:py-20 md:py-28 border-t border-[#1f1f23]">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8 sm:mb-12">
+          <div>
+            <div class="eyebrow">Recenzii</div>
+            <h2 class="text-2xl sm:text-4xl font-semibold tracking-tight text-white mt-2 sm:mt-3">Ce spun clienții</h2>
+            <p id="reviewsSummaryText" class="text-xs sm:text-sm text-zinc-500 mt-2">Păreri lăsate de cei care poartă tricourile la antrenament.</p>
+          </div>
+          <button type="button" id="toggleReviewFormBtn" onclick="toggleReviewForm()" class="self-start sm:self-auto h-11 px-6 border border-[#2a2a30] text-xs uppercase tracking-[0.14em] text-white hover:border-white transition whitespace-nowrap">
+            Lasă o recenzie
+          </button>
+        </div>
+
+        <!-- Formular minimalist de adăugare recenzie (ascuns implicit) -->
+        <div id="reviewFormWrapper" class="hidden mb-10 sm:mb-12 bg-[#111113] border border-[#1f1f23] p-5 sm:p-8">
+          <div class="flex items-center justify-between pb-4 mb-5 border-b border-[#1f1f23]">
+            <h3 class="text-sm font-medium text-white">Adaugă o recenzie</h3>
+            <button type="button" onclick="toggleReviewForm()" class="text-xs text-zinc-500 hover:text-white transition">Închide</button>
+          </div>
+
+          <form id="reviewForm" onsubmit="submitCustomerReview(event)" class="space-y-4 sm:space-y-5">
+            <div>
+              <label class="block text-xs text-zinc-400 mb-2">Evaluare</label>
+              <div class="flex items-center gap-1.5" id="reviewStarSelector">
+                <button type="button" onclick="selectReviewRating(1)" data-star="1" class="review-star-btn h-9 w-9 border border-white bg-white text-black text-sm transition" aria-label="1 stea">★</button>
+                <button type="button" onclick="selectReviewRating(2)" data-star="2" class="review-star-btn h-9 w-9 border border-white bg-white text-black text-sm transition" aria-label="2 stele">★</button>
+                <button type="button" onclick="selectReviewRating(3)" data-star="3" class="review-star-btn h-9 w-9 border border-white bg-white text-black text-sm transition" aria-label="3 stele">★</button>
+                <button type="button" onclick="selectReviewRating(4)" data-star="4" class="review-star-btn h-9 w-9 border border-white bg-white text-black text-sm transition" aria-label="4 stele">★</button>
+                <button type="button" onclick="selectReviewRating(5)" data-star="5" class="review-star-btn h-9 w-9 border border-white bg-white text-black text-sm transition" aria-label="5 stele">★</button>
+                <span id="reviewRatingLabel" class="ml-2 text-xs text-zinc-400">5 / 5</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+              <div>
+                <label for="reviewAuthor" class="block text-xs text-zinc-400 mb-1.5">Nume / Prenume</label>
+                <input type="text" id="reviewAuthor" required maxlength="40" placeholder="ex. Andrei M." class="w-full h-11 sm:h-12 px-3.5 sm:px-4 text-sm" />
+              </div>
+              <div>
+                <label for="reviewProduct" class="block text-xs text-zinc-400 mb-1.5">Model (opțional)</label>
+                <select id="reviewProduct" class="w-full h-11 sm:h-12 px-3.5 sm:px-4 text-sm bg-[#0a0a0b]">
+                  <option value="Wordmark Tee">Scris PURELIFT pe piept</option>
+                  <option value="Emblem Tee">Emblema PURELIFT pe piept</option>
+                  <option value="Signature Tee">Emblemă și scris PURELIFT</option>
+                </select>
+              </div>
+              <div>
+                <label for="reviewSize" class="block text-xs text-zinc-400 mb-1.5">Mărime purtată (opțional)</label>
+                <select id="reviewSize" class="w-full h-11 sm:h-12 px-3.5 sm:px-4 text-sm bg-[#0a0a0b]">
+                  <option value="">Alege mărimea</option>
+                  <option value="S">Mărimea S</option>
+                  <option value="M">Mărimea M</option>
+                  <option value="L">Mărimea L</option>
+                  <option value="XL">Mărimea XL</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="reviewText" class="block text-xs text-zinc-400 mb-1.5">Părerea ta</label>
+              <textarea id="reviewText" required rows="3" maxlength="400" placeholder="Cum ți se pare materialul, croiala sau mărimea?" class="w-full p-3.5 sm:p-4 text-sm bg-[#0a0a0b] border border-[#2a2a30] text-white placeholder-zinc-600 focus:outline-none focus:border-white transition"></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+              <div>
+                <input type="file" id="reviewPhotoInput" accept="image/*" class="hidden" onchange="handleReviewPhotoSelect(event)" />
+                <div class="flex items-center gap-3">
+                  <button type="button" onclick="document.getElementById('reviewPhotoInput').click()" class="h-10 px-4 border border-[#2a2a30] text-xs text-zinc-300 hover:border-white hover:text-white transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Adaugă o poză (opțional)</span>
+                  </button>
+                  <div id="reviewPhotoPreviewWrap" class="hidden flex items-center gap-2.5">
+                    <img id="reviewPhotoPreviewImg" src="" alt="Previzualizare" class="w-10 h-10 object-cover border border-[#2a2a30]" />
+                    <button type="button" onclick="clearReviewPhoto()" class="text-xs text-zinc-500 hover:text-white underline underline-offset-4 transition">Șterge</button>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" id="reviewSubmitBtn" class="h-11 px-7 bg-white text-black text-xs font-semibold uppercase tracking-[0.14em] hover:bg-zinc-200 transition">
+                Publică recenzia
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Lista de recenzii / Empty state minimalist -->
+        <div id="reviewsListContainer"></div>
+      </div>
+    </section>
+
+    <!-- Lightbox minimalist pentru pozele din recenzii -->
+    <div id="reviewPhotoLightbox" class="modal-container fixed inset-0 z-[65] flex items-center justify-center p-4 bg-black/90" onclick="if(event.target===this) closeReviewLightbox()">
+      <div class="relative max-w-2xl w-full flex flex-col items-center">
+        <button type="button" onclick="closeReviewLightbox()" class="self-end mb-3 h-10 w-10 flex items-center justify-center text-zinc-400 hover:text-white transition" aria-label="Închide">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <img id="reviewLightboxImg" src="" alt="Poză recenzie client" class="max-h-[82vh] w-auto object-contain border border-[#1f1f23]" />
+      </div>
+    </div>
   </main>
 
   <!-- ==================== FOOTER ==================== -->

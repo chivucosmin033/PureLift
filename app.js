@@ -611,9 +611,260 @@ function closeOrderConfirmation() {
   lockScroll(false);
 }
 
+// ---------- Reviews (minimalist, cu poză opțională, salvare locală + notificare pe email) ----------
+const REVIEWS_STORAGE_KEY = 'purelift_v2_reviews';
+let selectedReviewRating = 5;
+let selectedReviewPhotoDataUrl = '';
+
+function loadCustomerReviews() {
+  try {
+    const raw = localStorage.getItem(REVIEWS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomerReviews(list) {
+  try {
+    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toggleReviewForm() {
+  const wrapper = document.getElementById('reviewFormWrapper');
+  if (!wrapper) return;
+  wrapper.classList.toggle('hidden');
+  if (!wrapper.classList.contains('hidden')) {
+    document.getElementById('reviewAuthor')?.focus();
+  }
+}
+
+function selectReviewRating(rating) {
+  selectedReviewRating = rating;
+  document.querySelectorAll('#reviewStarSelector .review-star-btn').forEach(btn => {
+    const star = parseInt(btn.getAttribute('data-star'), 10);
+    btn.classList.remove('border-white', 'bg-white', 'text-black', 'border-[#2a2a30]', 'text-zinc-500');
+    if (star <= rating) {
+      btn.classList.add('border-white', 'bg-white', 'text-black');
+    } else {
+      btn.classList.add('border-[#2a2a30]', 'text-zinc-500');
+    }
+  });
+  const label = document.getElementById('reviewRatingLabel');
+  if (label) label.textContent = `${rating} / 5`;
+}
+
+function handleReviewPhotoSelect(event) {
+  const file = event.target?.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('Selectează un fișier imagine (JPG / PNG)', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const maxDim = 700;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      selectedReviewPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+
+      const previewImg = document.getElementById('reviewPhotoPreviewImg');
+      const previewWrap = document.getElementById('reviewPhotoPreviewWrap');
+      if (previewImg && previewWrap) {
+        previewImg.src = selectedReviewPhotoDataUrl;
+        previewWrap.classList.remove('hidden');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearReviewPhoto() {
+  selectedReviewPhotoDataUrl = '';
+  const input = document.getElementById('reviewPhotoInput');
+  if (input) input.value = '';
+  document.getElementById('reviewPhotoPreviewWrap')?.classList.add('hidden');
+}
+
+function openReviewLightbox(idx) {
+  const reviews = loadCustomerReviews();
+  const item = reviews[idx];
+  if (!item || !item.photo) return;
+  const img = document.getElementById('reviewLightboxImg');
+  const modal = document.getElementById('reviewPhotoLightbox');
+  if (img && modal) {
+    img.src = item.photo;
+    modal.classList.add('active');
+    lockScroll(true);
+  }
+}
+
+function closeReviewLightbox() {
+  document.getElementById('reviewPhotoLightbox')?.classList.remove('active');
+  lockScroll(false);
+}
+
+function renderReviews() {
+  const container = document.getElementById('reviewsListContainer');
+  const summary = document.getElementById('reviewsSummaryText');
+  if (!container) return;
+
+  const reviews = loadCustomerReviews();
+
+  if (reviews.length === 0) {
+    if (summary) {
+      summary.textContent = 'Păreri lăsate de cei care poartă tricourile la antrenament.';
+    }
+    container.innerHTML = `
+      <div class="border-t border-[#1f1f23] py-10 sm:py-12 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-sm text-white">Nu există încă recenzii publicate.</p>
+          <p class="text-xs text-zinc-500 mt-1">Ai comandat deja un tricou PURELIFT? Fii primul care lasă o părere (și o poză) despre material și mărime.</p>
+        </div>
+        <button type="button" onclick="toggleReviewForm()" class="self-start sm:self-auto text-xs text-zinc-300 hover:text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition">
+          Scrie prima recenzie
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  const avg = (reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1);
+  if (summary) {
+    summary.textContent = `Medie ${avg} / 5 · ${reviews.length} ${reviews.length === 1 ? 'recenzie' : 'recenzii'}`;
+  }
+
+  container.innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-3 border-t border-[#1f1f23]">
+      ${reviews.map((r, idx) => {
+        const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+        const metaParts = [];
+        if (r.product) metaParts.push(escapeHtml(r.product));
+        if (r.size) metaParts.push(`Mărimea ${escapeHtml(r.size)}`);
+        const metaLine = metaParts.join(' · ');
+        const colBorder = (idx % 3 !== 2) ? 'md:border-r' : '';
+        const photoHtml = r.photo ? `
+          <button type="button" onclick="openReviewLightbox(${idx})" class="mt-4 block overflow-hidden border border-[#1f1f23] hover:border-zinc-500 transition group">
+            <img src="${r.photo}" alt="Poză recenzie ${escapeHtml(r.author)}" class="w-20 h-24 object-cover group-hover:scale-105 transition duration-300" />
+          </button>
+        ` : '';
+        return `
+          <article class="py-6 sm:py-8 md:px-6 first:md:pl-0 border-b ${colBorder} border-[#1f1f23] flex flex-col justify-between gap-5">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-3">
+                <span class="tracking-widest text-white">${stars}</span>
+                <span class="text-zinc-600">${escapeHtml(r.date || '')}</span>
+              </div>
+              <p class="text-sm text-zinc-300 leading-relaxed">${escapeHtml(r.text)}</p>
+              ${photoHtml}
+            </div>
+            <div class="pt-2">
+              <div class="text-xs font-medium text-white">${escapeHtml(r.author)}</div>
+              ${metaLine ? `<div class="text-[11px] text-zinc-500 mt-0.5">${metaLine}</div>` : ''}
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+async function submitCustomerReview(event) {
+  event.preventDefault();
+  const author = document.getElementById('reviewAuthor')?.value.trim();
+  const product = document.getElementById('reviewProduct')?.value || '';
+  const size = document.getElementById('reviewSize')?.value || '';
+  const text = document.getElementById('reviewText')?.value.trim();
+  const btn = document.getElementById('reviewSubmitBtn');
+
+  if (!author || !text) {
+    showToast('Completează numele și recenzia', 'error');
+    return;
+  }
+
+  const today = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' });
+  const newReview = {
+    author,
+    product,
+    size,
+    rating: selectedReviewRating,
+    text,
+    photo: selectedReviewPhotoDataUrl || '',
+    date: today
+  };
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Se publică...';
+  }
+
+  const list = loadCustomerReviews();
+  list.unshift(newReview);
+  saveCustomerReviews(list);
+  renderReviews();
+
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        _subject: `Recenzie nouă PURELIFT (${selectedReviewRating}/5) — ${author}`,
+        Tip: 'RECENZIE CLIENT',
+        Client: author,
+        Evaluare: `${selectedReviewRating} / 5 stele`,
+        Model: product || '-',
+        Marime: size || '-',
+        Recenzie: text,
+        Are_Poza: selectedReviewPhotoDataUrl ? 'DA' : 'NU',
+        Data: today
+      })
+    });
+  } catch (e) {}
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Publică recenzia';
+  }
+
+  document.getElementById('reviewForm')?.reset();
+  clearReviewPhoto();
+  selectReviewRating(5);
+  document.getElementById('reviewFormWrapper')?.classList.add('hidden');
+  showToast('Mulțumim! Recenzia ta a fost adăugată.');
+}
+
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
+  renderReviews();
   updateCartBadge();
   renderCartDrawer();
 
@@ -628,5 +879,6 @@ document.addEventListener('DOMContentLoaded', () => {
     closeQuickView();
     closeCheckoutModal();
     closeCartDrawer();
+    closeReviewLightbox();
   });
 });
