@@ -647,6 +647,42 @@ async function fetchSharedReviews() {
   } catch (e) {}
 }
 
+async function handleEmailModerationFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const modAction = params.get('mod_action');
+    const modId = params.get('id');
+    if (!modAction || !modId) return false;
+
+    setTimeout(() => {
+      document.getElementById('recenzii')?.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
+    showToast('Se actualizează recenzia pe site...');
+
+    await fetch(${GAS_WEBAPP_URL}?action=&id=&t=, {
+      method: 'GET'
+    });
+
+    await fetchSharedReviews();
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname + '#recenzii');
+    }
+
+    if (modAction === 'approve') {
+      showToast('✓ Recenzia a fost aprobată și este acum vizibilă pe site!');
+    } else if (modAction === 'approve_nophoto') {
+      showToast('✓ Recenzia a fost aprobată (fără poză) și este vizibilă pe site!');
+    } else if (modAction === 'reject' || modAction === 'delete') {
+      showToast('✕ Recenzia a fost ștearsă definitiv de pe site.');
+    }
+    return true;
+  } catch (e) {
+    showToast('Eroare la procesarea acțiunii — reîncearcă', 'error');
+    return false;
+  }
+}
+
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')
@@ -880,7 +916,9 @@ async function submitCustomerReview(event) {
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
   renderReviews();
-  fetchSharedReviews();
+  handleEmailModerationFromUrl().then(handled => {
+    if (!handled) fetchSharedReviews();
+  });
   updateCartBadge();
   renderCartDrawer();
 
