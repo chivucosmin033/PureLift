@@ -530,10 +530,13 @@ async function processCheckoutOrder(e) {
 
   const payload = {
     _subject: `Comandă nouă PURELIFT ${orderNumber} — ${fullName}`,
+    Numar_Comanda: orderNumber,
     Comanda: orderNumber,
+    Client: fullName,
     Prenume: firstName,
     Nume_de_familie: lastName,
     Telefon: phone,
+    Email: email,
     Email_Client: email,
     Tara: country,
     Adresa: address,
