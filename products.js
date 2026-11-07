@@ -4,7 +4,7 @@
 const PRODUCTS_DATA = [
   {
     id: 'pl-01',
-    title: 'Tricou PURELIFT · Scris',
+    title: 'Scris PURELIFT pe piept',
     subtitle: 'Scris PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
@@ -29,7 +29,7 @@ const PRODUCTS_DATA = [
   },
   {
     id: 'pl-02',
-    title: 'Tricou PURELIFT · Emblemă',
+    title: 'Emblema PURELIFT pe piept',
     subtitle: 'Emblema PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
@@ -54,7 +54,7 @@ const PRODUCTS_DATA = [
   },
   {
     id: 'pl-03',
-    title: 'Tricou PURELIFT · Logo complet',
+    title: 'Emblemă și scris PURELIFT pe piept',
     subtitle: 'Emblemă și scris PURELIFT pe piept',
     category: 'tee',
     priceRon: 80,
