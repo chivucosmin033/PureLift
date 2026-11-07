@@ -611,8 +611,9 @@ function closeOrderConfirmation() {
   lockScroll(false);
 }
 
-// ---------- Reviews (minimalist, cu poză opțională, salvare locală + notificare pe email) ----------
+// ---------- Reviews (minimalist, vizibile pentru toți vizitatorii prin Google Apps Script + cache local) ----------
 const REVIEWS_STORAGE_KEY = 'purelift_v2_reviews';
+const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec';
 let selectedReviewRating = 5;
 let selectedReviewPhotoDataUrl = '';
 
@@ -628,6 +629,28 @@ function loadCustomerReviews() {
 function saveCustomerReviews(list) {
   try {
     localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+async function fetchSharedReviews() {
+  try {
+    const res = await fetch(`${GAS_WEBAPP_URL}?action=reviews`, { method: 'GET' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && Array.isArray(data.reviews)) {
+      // Combinăm recenziile de pe server cu cele locale (fără duplicate)
+      const local = loadCustomerReviews();
+      const map = new Map();
+      [...data.reviews, ...local].forEach(r => {
+        if (r && r.author && r.text) {
+          const key = `${r.author}|${r.text}|${r.date || ''}`;
+          if (!map.has(key)) map.set(key, r);
+        }
+      });
+      const merged = Array.from(map.values());
+      saveCustomerReviews(merged);
+      renderReviews();
+    }
   } catch (e) {}
 }
 
@@ -676,7 +699,7 @@ function handleReviewPhotoSelect(event) {
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      const maxDim = 700;
+      const maxDim = 480;
       let w = img.width;
       let h = img.height;
       if (w > maxDim || h > maxDim) {
@@ -693,7 +716,7 @@ function handleReviewPhotoSelect(event) {
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
-      selectedReviewPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+      selectedReviewPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.72);
 
       const previewImg = document.getElementById('reviewPhotoPreviewImg');
       const previewWrap = document.getElementById('reviewPhotoPreviewWrap');
@@ -832,7 +855,7 @@ async function submitCustomerReview(event) {
   renderReviews();
 
   try {
-    await fetch('https://script.google.com/macros/s/AKfycbxKwpQKBZ5i8OLo_429viX2zbUQM1Qsqzp1GUxRYjRL5yp0tzMqQd5HHRvhemNKsPco1Q/exec', {
+    await fetch(GAS_WEBAPP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
@@ -844,9 +867,11 @@ async function submitCustomerReview(event) {
         Marime: size || '-',
         Recenzie: text,
         Are_Poza: selectedReviewPhotoDataUrl ? 'DA' : 'NU',
-        Data: today
+        Data: today,
+        reviewObj: newReview
       })
     });
+    fetchSharedReviews();
   } catch (e) {}
 
   if (btn) {
@@ -865,6 +890,7 @@ async function submitCustomerReview(event) {
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
   renderReviews();
+  fetchSharedReviews();
   updateCartBadge();
   renderCartDrawer();
 
