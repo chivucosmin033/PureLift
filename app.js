@@ -659,7 +659,7 @@ async function handleEmailModerationFromUrl() {
     }, 150);
     showToast('Se actualizează recenzia pe site...');
 
-    await fetch(${GAS_WEBAPP_URL}?action=&id=&t=, {
+    await fetch(GAS_WEBAPP_URL + '?action=' + encodeURIComponent(modAction) + '&id=' + encodeURIComponent(modId) + '&t=' + Date.now(), {
       method: 'GET'
     });
 
