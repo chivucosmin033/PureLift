@@ -637,7 +637,10 @@ function saveCustomerReviews(list) {
 
 async function fetchSharedReviews() {
   try {
-    const res = await fetch(`${GAS_WEBAPP_URL}?action=reviews&t=${Date.now()}`, { method: 'GET' });
+    const res = await fetch(GAS_WEBAPP_URL + '?action=reviews&t=' + Date.now(), {
+      method: 'GET',
+      credentials: 'omit'
+    });
     if (!res.ok) return;
     const data = await res.json();
     if (data && Array.isArray(data.reviews)) {
@@ -659,11 +662,21 @@ async function handleEmailModerationFromUrl() {
     }, 150);
     showToast('Se actualizează recenzia pe site...');
 
-    await fetch(GAS_WEBAPP_URL + '?action=' + encodeURIComponent(modAction) + '&id=' + encodeURIComponent(modId) + '&t=' + Date.now(), {
-      method: 'GET'
+    const res = await fetch(GAS_WEBAPP_URL + '?action=' + encodeURIComponent(modAction) + '&id=' + encodeURIComponent(modId) + '&t=' + Date.now(), {
+      method: 'GET',
+      credentials: 'omit'
     });
-
-    await fetchSharedReviews();
+    try {
+      const data = await res.json();
+      if (data && Array.isArray(data.reviews)) {
+        saveCustomerReviews(data.reviews);
+        renderReviews();
+      } else {
+        await fetchSharedReviews();
+      }
+    } catch (_) {
+      await fetchSharedReviews();
+    }
 
     if (window.history && window.history.replaceState) {
       window.history.replaceState({}, document.title, window.location.pathname + '#recenzii');
@@ -728,7 +741,7 @@ function handleReviewPhotoSelect(event) {
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      const maxDim = 480;
+      const maxDim = 1080;
       let w = img.width;
       let h = img.height;
       if (w > maxDim || h > maxDim) {
@@ -744,8 +757,14 @@ function handleReviewPhotoSelect(event) {
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, w, h);
-      selectedReviewPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+      let dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      if (dataUrl.length > 95000) {
+        dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+      }
+      selectedReviewPhotoDataUrl = dataUrl;
 
       const previewImg = document.getElementById('reviewPhotoPreviewImg');
       const previewWrap = document.getElementById('reviewPhotoPreviewWrap');
